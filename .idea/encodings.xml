@@ -1,12 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="Encoding">
+    <file url="file://$PROJECT_DIR$/www/account/account.html" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/www/alarmactive/alarmactive.html" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/www/css/style.css" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/www/js/app.js" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/www/js/controllers.js" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/www/lib/ionic-timepicker-0.2.0/dist/ionic-timepicker.js" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/www/lib/ionic-timepicker-0.2.0/dist/standard-time-meridian.js" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/www/lib/ionic-timepicker-0.2.0/src/ionic-timepicker.js" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/www/location/location.html" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/www/settings/settings.html" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/www/status/status.css" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/www/status/status.html" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/www/status/statusController.js" charset="UTF-8" />
