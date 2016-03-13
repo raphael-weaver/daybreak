@@ -11,7 +11,6 @@ angular.module('starter.controllers', ['ionic-timepicker', 'standard-time-meridi
 
   // Form data for the login modal
   $scope.loginData = {};
-
   $scope.timePickerObject = {
     etime: ((new Date()).getHours() * 60 * 60),  //Optional
     step: 05,  //Optional
