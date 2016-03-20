@@ -1,8 +1,5 @@
 .alarmPosition {
   position: absolute;
   top: 40%;
-  left: 50%;
-  height: 30%;
-  width: 90%;
-  margin: -15% 0 0 -45%;
+  width: 100%;
 }

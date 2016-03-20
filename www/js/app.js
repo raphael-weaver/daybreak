@@ -6,26 +6,6 @@
 // 'starter.controllers' is found in controllers.js
 angular.module('starter', ['ionic', 'starter.controllers'])
 
-
-.directive('clock', ['dateFilter', '$timeout', function(dateFilter, $timeout){
-  return {
-    restrict: 'E',
-    scope: {
-      format: '@'
-    },
-    link: function(scope, element, attrs){
-      var updateTime = function(){
-        var now = Date.now();
-
-        element.html(dateFilter(now, scope.format));
-        $timeout(updateTime, now % 1000);
-      };
-
-      updateTime();
-    }
-  };
-}])
-
 .run(function($ionicPlatform) {
   $ionicPlatform.ready(function() {
     // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard

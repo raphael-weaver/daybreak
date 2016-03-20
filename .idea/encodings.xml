@@ -7,10 +7,14 @@
     <file url="file://$PROJECT_DIR$/www/css/style.css" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/www/js/app.js" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/www/js/controllers.js" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/www/lib/ion-place-autocomplete/ion-place-autocomplete.css" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/www/lib/ion-place-autocomplete/ion-place-autocomplete.js" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/www/lib/ionic-timepicker-0.2.0/dist/ionic-timepicker.js" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/www/lib/ionic-timepicker-0.2.0/dist/standard-time-meridian.js" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/www/lib/ionic-timepicker-0.2.0/src/ionic-timepicker.js" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/www/location/location.css" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/www/location/location.html" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/www/location/locationController.js" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/www/settings/settings.html" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/www/status/status.css" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/www/status/status.html" charset="UTF-8" />

@@ -1,5 +1,11 @@
 <ion-view view-title="Location">
   <ion-content>
-    <h1>Location</h1>
+    <div class="list homeLocation">
+      <ion-google-place placeholder="Home Location" ng-model="location.home"/>
+    </div>
+    <div class="list workLocation">
+      <ion-google-place placeholder="Work Location" ng-model="location.work"/>
+    </div>
+    <button class="saveLocation button button-block button-positive">save</button>
   </ion-content>
 </ion-view>

@@ -1,4 +1,4 @@
-angular.module('starter.controllers', ['ionic-timepicker', 'standard-time-meridian'])
+angular.module('starter.controllers', ['ionic-timepicker', 'standard-time-meridian', 'ion-place-tools'])
 
 .controller('AppCtrl', function($scope, $ionicModal, $timeout) {
 
@@ -8,6 +8,7 @@ angular.module('starter.controllers', ['ionic-timepicker', 'standard-time-meridi
   // listen for the $ionicView.enter event:
   //$scope.$on('$ionicView.enter', function(e) {
   //});
+    $scope.testHide = false;
 
   // Form data for the login modal
   $scope.loginData = {};
