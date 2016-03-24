@@ -1,10 +1,18 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title></title>
-</head>
-<body>
-
-</body>
-</html>
+<ion-view view-title="Setting">
+  <ion-content>
+    <div class="settingDayToggles">
+      <ion-toggle toggle-balanced ng-repeat="day in settingsDaysList"
+                  ng-model="day.checked"
+                  ng-checked="day.checked">
+        {{ day.text }}
+      </ion-toggle>
+    </div>
+    <div class="settingFeatureToggles">
+      <ion-toggle toggle-balanced ng-repeat="feature in settingsFeaturesList"
+                  ng-model="feature.checked"
+                  ng-checked="feature.checked">
+        {{ feature.text }}
+      </ion-toggle>
+    </div>
+  </ion-content>
+</ion-view>

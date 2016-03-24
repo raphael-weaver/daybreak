@@ -1,6 +1,6 @@
 angular.module('starter.controllers', ['ionic-timepicker', 'standard-time-meridian', 'ion-place-tools'])
 
-.controller('AppCtrl', function($scope, $ionicModal, $timeout) {
+.controller('AppCtrl', function($scope, $ionicModal, $timeout, $ionicPopup) {
 
   // With the new view caching in Ionic, Controllers are only called
   // when they are recreated or on app start, instead of every page change.
@@ -8,8 +8,59 @@ angular.module('starter.controllers', ['ionic-timepicker', 'standard-time-meridi
   // listen for the $ionicView.enter event:
   //$scope.$on('$ionicView.enter', function(e) {
   //});
-    $scope.testHide = false;
+    $scope.googleConnnectButtonText = "google unconnected";
 
+    $scope.settingsDaysList = [
+      { text: "Mon", checked: false },
+      { text: "Tue", checked: false },
+      { text: "Wed", checked: false },
+      { text: "Thu", checked: false },
+      { text: "Fri", checked: false },
+      { text: "Sat", checked: false },
+      { text: "Sun", checked: false }
+    ];
+
+    $scope.settingsFeaturesList = [
+      { text: "Google Tasks", checked: false },
+      { text: "Weather", checked: false },
+      { text: "Commute Time", checked: false }
+    ];
+
+    // Triggered on a button click, or some other target
+  $scope.googleConnect = function() {
+      $scope.data = {};
+      // An elaborate, custom popup
+      var googleConnectPopup = $ionicPopup.show({
+        template: '<input type="text" ng-model="data.email" placeholder="email"></br><input type="password" ng-model="data.password" placeholder="password">',
+/*        title: 'google',*/
+        subTitle: 'google connection information',
+        scope: $scope,
+        buttons: [
+          { text: 'cancel' },
+          {
+            text: '<b>connect</b>',
+            type: 'button-positive',
+            onTap: function(e) {
+              if (!$scope.data.password) {
+                //don't allow the user to close unless he enters wifi password
+                e.preventDefault();
+              } else {
+                return $scope.data.password;
+              }
+            }
+          }
+        ]
+      });
+
+    googleConnectPopup.then(function(res) {
+      console.log('googleConnectPopup!', res);
+    });
+
+    $timeout(function() {
+      googleConnectPopup.close(); //close the popup after 3 seconds for some reason
+    }, 30000);
+  };
+    //end account
   // Form data for the login modal
   $scope.loginData = {};
   $scope.timePickerObject = {
