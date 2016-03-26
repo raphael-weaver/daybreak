@@ -2,8 +2,15 @@
 <project version="4">
   <component name="Encoding">
     <file url="file://$PROJECT_DIR$/www/account/account.html" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/www/account/accountService.js" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/www/alarmactive/alarmactive.css" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/www/alarmactive/alarmactive.html" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/www/alarmactive/alarmactiveService.js" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/www/backgroundServices/googleEvent.js" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/www/backgroundServices/googleMap.js" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/www/backgroundServices/notification.js" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/www/backgroundServices/textToSpeech.js" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/www/backgroundServices/weather.js" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/www/css/style.css" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/www/js/app.js" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/www/js/controllers.js" charset="UTF-8" />
@@ -15,11 +22,14 @@
     <file url="file://$PROJECT_DIR$/www/location/location.css" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/www/location/location.html" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/www/location/locationController.js" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/www/location/locationService.js" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/www/settings/settings.css" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/www/settings/settings.html" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/www/settings/settingsService.js" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/www/status/status.css" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/www/status/status.html" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/www/status/statusController.js" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/www/status/statusService.js" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/www/templates/account.html" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/www/templates/alarm.html" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/www/templates/location.html" charset="UTF-8" />

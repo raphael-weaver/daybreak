@@ -1,0 +1,10 @@
+.homeLocation {
+  font-size: small;
+}
+.workLocation {
+  font-size: small;
+}
+.saveLocation {
+  position: absolute;
+  top: 80%;
+}
