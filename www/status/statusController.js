@@ -1,47 +1,31 @@
-/*
-angular.module('starter.controllers', [])
+gcalarm.controller('statusController', ['$scope','statusService', '$ionicModal', '$timeout', '$ionicPopup', function($scope, statusService, $ionicModal, $timeout, $ionicPopup) {
 
-  .controller('StatusCtrl', function($scope, $ionicModal, $timeout) {
+  // Form data for the login modal
+  $scope.loginData = {};
 
-    // With the new view caching in Ionic, Controllers are only called
-    // when they are recreated or on app start, instead of every page change.
-    // To listen for when this page is active (for example, to refresh data),
-    // listen for the $ionicView.enter event:
-    //$scope.$on('$ionicView.enter', function(e) {
-    //});
-
-    // Form data for the login modal
-    $scope.loginData = {};
-
-    // Create the login modal that we will use later
-    $ionicModal.fromTemplateUrl('templates/login.html', {
-      scope: $scope
-    }).then(function(modal) {
-      $scope.modal = modal;
-    });
-
-    // Triggered in the login modal to close it
-    $scope.closeLogin = function() {
-      $scope.modal.hide();
+  var notificationTime = statusService.getNotificationTime();
+  $.when(notificationTime).done(function(data) {
+    $scope.timePickerObject = {
+      etime: data,//Optional
+      step: 05,  //Optional
+      format: 12,  //Optional
+      titleLabel: '12-hour Format',  //Optional
+      setLabel: 'Set',  //Optional
+      closeLabel: 'Close',  //Optional
+      setButtonType: 'button-positive',  //Optional
+      closeButtonType: 'button-stable',  //Optional
+      callback: function (val) {    //Mandatory
+        timePickerCallback(val);
+      }
     };
-
-    // Open the login modal
-    $scope.login = function() {
-      $scope.modal.show();
-    };
-
-    // Perform the login action when the user submits the login form
-    $scope.doLogin = function() {
-      console.log('Doing login', $scope.loginData);
-
-      // Simulate a login delay. Remove this and replace with your login
-      // code if using a login system
-      $timeout(function() {
-        $scope.closeLogin();
-      }, 1000);
-    };
-  })
-
-  .controller('PlaylistCtrl', function($scope, $stateParams) {
   });
-*/
+
+  function timePickerCallback(val) {
+    if (typeof (val) === 'undefined') {
+      console.log('Time not selected');
+    } else {
+      statusService.saveNotificationTime(val);
+    }
+  }
+
+}]);

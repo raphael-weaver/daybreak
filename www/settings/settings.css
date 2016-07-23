@@ -1,8 +1,13 @@
 .settingDayToggles {
   position: absolute;
+  width: 50%;
 }
 .settingFeatureToggles {
   position: absolute;
-  left: 46%;
-  width: 57%;
+  left: 50%;
+  width: 50%;
+}
+.saveLocation {
+  position: absolute;
+  top: 80%;
 }

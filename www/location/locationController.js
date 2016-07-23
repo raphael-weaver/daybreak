@@ -1,28 +1,31 @@
-/*var geocoder = new google.maps.Geocoder();
-geocoder.geocode({
-  address: addressFromEventHandler
-}, function(results, status) {
-  if (status == google.maps.GeocoderStatus.OK) {
-    q.resolve(results);
-  } else {
-    q.reject();
-  }
-});
+gcalarm.controller('locationController', ['$scope','locationService', '$ionicModal', '$timeout', '$ionicPopup', function($scope, locationService, $ionicModal, $timeout, $ionicPopup) {
 
- scope.locationChanged = function (address) {
- geocoder.geocode({
- address: address
- }, function(results, status) {
- if (status == google.maps.GeocoderStatus.OK) {
- scope.data.latitude = results[0].geometry.location.lat();
- scope.data.longitude = results[0].geometry.location.lng();
- map.setCenter(results[0].geometry.location);
- marker.setPosition(results[0].geometry.location);
- if (options.fitBounds) {
- map.fitBounds(results[0].geometry.viewport);
- }
- }
- });
- };
-*/
+  $scope.location = {"home":"","work":""};
+
+  $scope.homeChanged = function(homeLocation) {
+    $scope.location.home = homeLocation;
+  };
+  $scope.workChanged = function(workLocation) {
+    $scope.location.work = workLocation;
+  };
+
+  var homeLocation = locationService.getHomeLocation();
+  $.when(homeLocation).done(function(data) {
+    if(typeof data != "undefined"){
+      $scope.home = data;
+    }
+  });
+
+  var workLocation = locationService.getWorkLocation();
+  $.when(workLocation).done(function(data) {
+    if(typeof data != "undefined"){
+      $scope.work = data;
+    }
+  });
+
+  $scope.saveLocations = function() {
+    locationService.saveLocations($scope.location);
+  };
+
+}]);
 

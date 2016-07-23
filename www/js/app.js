@@ -4,7 +4,7 @@
 // 'starter' is the name of this angular module example (also set in a <body> attribute in index.html)
 // the 2nd parameter is an array of 'requires'
 // 'starter.controllers' is found in controllers.js
-angular.module('starter', ['ionic', 'starter.controllers'])
+var gcalarm = angular.module('gcalarm', ['ionic', 'ionic-timepicker', 'standard-time-meridian', 'ion-place-tools'])
 
 .run(function($ionicPlatform) {
   $ionicPlatform.ready(function() {
@@ -28,14 +28,15 @@ angular.module('starter', ['ionic', 'starter.controllers'])
     url: '/app',
     abstract: true,
     templateUrl: 'templates/menu.html',
-    controller: 'AppCtrl'
+    controller: 'gcalarmController'
   })
-  .state('app.alarm', {
+    .state('app.alarm', {
     url: '/alarm',
     views: {
       'menuContent': {
         abstract: true,
-        templateUrl: 'templates/alarm.html'
+        templateUrl: 'templates/alarm.html',
+        controller: 'statusController'
       }
     }
   })
@@ -44,7 +45,8 @@ angular.module('starter', ['ionic', 'starter.controllers'])
     url: '/account',
     views: {
       'menuContent': {
-        templateUrl: 'templates/account.html'
+        templateUrl: 'templates/account.html',
+        controller: 'accountController'
       }
     }
   })
@@ -53,7 +55,8 @@ angular.module('starter', ['ionic', 'starter.controllers'])
       url: '/location',
       views: {
         'menuContent': {
-          templateUrl: 'templates/location.html'
+          templateUrl: 'templates/location.html',
+          controller: 'locationController'
         }
       }
     })
@@ -62,12 +65,12 @@ angular.module('starter', ['ionic', 'starter.controllers'])
       views: {
         'menuContent': {
           templateUrl: 'templates/settings.html',
-          controller: 'PlaylistsCtrl'
+          controller: 'settingsController'
         }
       }
-    })
+    });
 
-  .state('app.single', {
+/*  .state('app.single', {
     url: '/playlists/:playlistId',
     views: {
       'menuContent': {
@@ -75,7 +78,7 @@ angular.module('starter', ['ionic', 'starter.controllers'])
         controller: 'PlaylistCtrl'
       }
     }
-  })
+  })*/
   // if none of the above states are matched, use this as the fallback
   $urlRouterProvider.otherwise('/app/alarm');
 });

@@ -2,13 +2,14 @@
 <widget id="com.ionicframework.gcalarm275190" version="0.0.1" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
   <name>gcalarm</name>
   <description>
-        An Ionic Framework and Cordova project.
+        GCAlarm.
     </description>
-  <author email="you@example.com" href="http://example.com.com/">
-      Your Name Here
+  <author email="email@irahtech.com" href="http://irahtech.com/">
+      Raphael Weaver
     </author>
-  <content src="index.html"/>
+  <content src="main.html"/>
   <access origin="*"/>
+  <plugin name="de.appplant.cordova.plugin.local-notification"/>
   <preference name="webviewbounce" value="false"/>
   <preference name="UIWebViewBounce" value="false"/>
   <preference name="DisallowOverscroll" value="true"/>

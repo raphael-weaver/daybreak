@@ -47,7 +47,7 @@ placeTools.directive('ionGooglePlace', [
           scope.radius = 1500000;
         }
 
-        scope.locations = []
+        scope.locations = [];
 
         scope.$watch('searchQuery', function(query) {
           if (!query) {
@@ -60,8 +60,7 @@ placeTools.directive('ionGooglePlace', [
             if (query.length < 3) {
               scope.locations = [];
               return;
-            };
-
+            }
             var req = {};
             req.input = query;
             if (latLng) {

@@ -1,9 +1,13 @@
+gcalarm.controller('gcalarmController', ['$scope', '$ionicModal', '$timeout', '$ionicPopup', function($scope, $ionicModal, $timeout, $ionicPopup) {
+
+}]);
+/*
 angular.module('starter.controllers', ['ionic-timepicker', 'standard-time-meridian', 'ion-place-tools'])
 
-.controller('AppCtrl', function($scope, $ionicModal, $timeout, $ionicPopup) {
+.controller('gcalarmController', function($scope, $ionicModal, $timeout, $ionicPopup) {
 
   // With the new view caching in Ionic, Controllers are only called
-  // when they are recreated or on app start, instead of every page change.
+ // when they are recreated or on app start, instead of every page change.
   // To listen for when this page is active (for example, to refresh data),
   // listen for the $ionicView.enter event:
   //$scope.$on('$ionicView.enter', function(e) {
@@ -27,12 +31,13 @@ angular.module('starter.controllers', ['ionic-timepicker', 'standard-time-meridi
     ];
 
     // Triggered on a button click, or some other target
-  $scope.googleConnect = function() {
+    $scope.googleConnect = function() {
       $scope.data = {};
       // An elaborate, custom popup
       var googleConnectPopup = $ionicPopup.show({
-        template: '<input type="text" ng-model="data.email" placeholder="email"></br><input type="password" ng-model="data.password" placeholder="password">',
-/*        title: 'google',*/
+        template: '<div id="authorize-div" style="display: none"><span>Authorize access to Google Tasks API</span><!--Button for the user to click to initiate auth sequence --><button id="authorize-button" onclick="handleAuthClick(event)">Authorize </button></div><pre id="output"></pre>',
+        //template: '<input type="text" ng-model="data.email" placeholder="email"></br><input type="password" ng-model="data.password" placeholder="password">',
+        /!*        title: 'google',*!/
         subTitle: 'google connection information',
         scope: $scope,
         buttons: [
@@ -52,14 +57,14 @@ angular.module('starter.controllers', ['ionic-timepicker', 'standard-time-meridi
         ]
       });
 
-    googleConnectPopup.then(function(res) {
-      console.log('googleConnectPopup!', res);
-    });
+      googleConnectPopup.then(function(res) {
+        console.log('googleConnectPopup!', res);
+      });
 
-    $timeout(function() {
-      googleConnectPopup.close(); //close the popup after 3 seconds for some reason
-    }, 30000);
-  };
+      $timeout(function() {
+        googleConnectPopup.close(); //close the popup after 3 seconds for some reason
+      }, 30000);
+    };
     //end account
   // Form data for the login modal
   $scope.loginData = {};
@@ -128,3 +133,4 @@ angular.module('starter.controllers', ['ionic-timepicker', 'standard-time-meridi
 
 .controller('PlaylistCtrl', function($scope, $stateParams) {
 });
+*/
