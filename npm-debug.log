@@ -1,0 +1,61 @@
+0 info it worked if it ends with ok
+1 verbose cli [ 'C:\\Program Files\\nodejs\\node.exe',
+1 verbose cli   'C:\\Users\\IrahTech\\AppData\\Roaming\\npm\\node_modules\\npm\\bin\\npm-cli.js',
+1 verbose cli   'install',
+1 verbose cli   '-g',
+1 verbose cli   'bower' ]
+2 info using npm@3.10.5
+3 info using node@v6.3.0
+4 silly loadCurrentTree Starting
+5 silly install loadCurrentTree
+6 silly install readGlobalPackageData
+7 silly fetchPackageMetaData bower
+8 silly fetchOtherPackageData bower
+9 silly cache add args [ 'bower', null ]
+10 verbose cache add spec bower
+11 silly cache add parsed spec Result {
+11 silly cache add   raw: 'bower',
+11 silly cache add   scope: null,
+11 silly cache add   escapedName: 'bower',
+11 silly cache add   name: null,
+11 silly cache add   rawSpec: 'bower',
+11 silly cache add   spec: 'C:\\Irah Technologies\\apps\\gcalarm\\bower',
+11 silly cache add   type: 'local' }
+12 silly addLocalTarball shasum (computed) da39a3ee5e6b4b0d3255bfef95601890afd80709
+13 verbose addTmpTarball C:\Irah Technologies\apps\gcalarm\bower not in flight; adding
+14 verbose correctMkdir C:\Users\IrahTech\AppData\Roaming\npm-cache correctMkdir not in flight; initializing
+15 verbose addTmpTarball validating metadata from C:\Irah Technologies\apps\gcalarm\bower
+16 verbose tar unpack C:\Irah Technologies\apps\gcalarm\bower
+17 verbose tar unpacking to C:\Users\IrahTech\AppData\Local\Temp\npm-6708-cb7d3d1f\unpack-942710c3
+18 silly gentlyRm C:\Users\IrahTech\AppData\Local\Temp\npm-6708-cb7d3d1f\unpack-942710c3 is being purged
+19 verbose gentlyRm don't care about contents; nuking C:\Users\IrahTech\AppData\Local\Temp\npm-6708-cb7d3d1f\unpack-942710c3
+20 silly gunzTarPerm modes [ '777', '666' ]
+21 error tar.unpack error reading C:\Irah Technologies\apps\gcalarm\bower
+22 error addLocal Could not install C:\Irah Technologies\apps\gcalarm\bower
+23 silly fetchPackageMetaData Error: 0-byte tarball
+23 silly fetchPackageMetaData Please run `npm cache clean`
+23 silly fetchPackageMetaData     at C:\Users\IrahTech\AppData\Roaming\npm\node_modules\npm\lib\utils\tar.js:276:14
+23 silly fetchPackageMetaData     at FSReqWrap.oncomplete (fs.js:123:15)
+23 silly fetchPackageMetaData  error for bower Error: 0-byte tarball
+23 silly fetchPackageMetaData Please run `npm cache clean`
+23 silly fetchPackageMetaData     at C:\Users\IrahTech\AppData\Roaming\npm\node_modules\npm\lib\utils\tar.js:276:14
+23 silly fetchPackageMetaData     at FSReqWrap.oncomplete (fs.js:123:15)
+24 silly rollbackFailedOptional Starting
+25 silly rollbackFailedOptional Finishing
+26 silly runTopLevelLifecycles Starting
+27 silly runTopLevelLifecycles Finishing
+28 silly install printInstalled
+29 verbose stack Error: 0-byte tarball
+29 verbose stack Please run `npm cache clean`
+29 verbose stack     at C:\Users\IrahTech\AppData\Roaming\npm\node_modules\npm\lib\utils\tar.js:276:14
+29 verbose stack     at FSReqWrap.oncomplete (fs.js:123:15)
+30 verbose cwd C:\Irah Technologies\apps\gcalarm
+31 error Windows_NT 10.0.10586
+32 error argv "C:\\Program Files\\nodejs\\node.exe" "C:\\Users\\IrahTech\\AppData\\Roaming\\npm\\node_modules\\npm\\bin\\npm-cli.js" "install" "-g" "bower"
+33 error node v6.3.0
+34 error npm  v3.10.5
+35 error 0-byte tarball
+35 error Please run `npm cache clean`
+36 error If you need help, you may report this error at:
+36 error     <https://github.com/npm/npm/issues>
+37 verbose exit [ 1, true ]
