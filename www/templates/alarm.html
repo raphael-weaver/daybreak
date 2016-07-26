@@ -2,7 +2,8 @@
   <ion-content>
     <h1>GC Alarm</h1>
     <ion-view>
-      <div ng-include src="'status/status.html'"></div>
+      <div ng-hide="true" ng-include src="'status/status.html'"></div>
+      <div ng-hide="false" ng-include src="'alarmactive/alarmactive.html'"></div>
     </ion-view>
   </ion-content>
 </ion-view>

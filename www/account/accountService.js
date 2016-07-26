@@ -5,11 +5,11 @@ gcalarm.service('accountService', function() {
   this.getGoogleToken = function () {
     var defer = $.Deferred();
     gcalarmdb.transaction(function (tx) {
-      tx.executeSql('CREATE TABLE IF NOT EXISTS TOKEN (tokenType TEXT, token TEXT)');
+      tx.executeSql('CREATE TABLE IF NOT EXISTS TOKEN (tokenType TEXT, tokenJSONString TEXT)');
       tx.executeSql("SELECT * FROM TOKEN WHERE tokenType = ?", ["GOOGLE"], function (tx, resultSet) {
         if(resultSet.rows.length > 0) {
-          var googleToken = resultSet.rows.item(0).token;
-          defer.resolve(googleToken);
+          var googleTokenJSONString = resultSet.rows.item(0).tokenJSONString;
+          defer.resolve(googleTokenJSONString);
         }
         else{
           defer.resolve("");
@@ -26,11 +26,17 @@ gcalarm.service('accountService', function() {
   };
 
   this.saveGoogleToken = function (token) {
-
     gcalarmdb.transaction(function (tx) {
-      tx.executeSql('DROP TABLE TOKEN', []);
-      tx.executeSql('CREATE TABLE IF NOT EXISTS TOKEN (tokenType TEXT, token TEXT)');
-      tx.executeSql('INSERT INTO TOKEN (tokenType, token) VALUES (?,?)', ["GOOGLE", token]);
+      tx.executeSql('CREATE TABLE IF NOT EXISTS TOKEN (tokenType TEXT, tokenJSONString TEXT)');
+      tx.executeSql('INSERT INTO TOKEN (tokenType, tokenJSONString) VALUES (?,?)', ["GOOGLE", JSON.stringify(token)]);
+    });
+
+  };
+
+  this.deleteGoogleToken = function (token) {
+    gcalarmdb.transaction(function (tx) {
+      tx.executeSql('CREATE TABLE IF NOT EXISTS TOKEN (tokenType TEXT, tokenJSONString TEXT)');
+      tx.executeSql('DELETE FROM TOKEN WHERE tokenType = ?', ["GOOGLE"]);
     });
 
   };
