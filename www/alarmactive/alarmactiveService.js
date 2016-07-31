@@ -1,3 +1,3 @@
-gcalarm.service('alarmactiveService', [, function() {
+gcalarm.service('alarmactiveService', function() {
 
-}]);
+});

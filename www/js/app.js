@@ -30,17 +30,25 @@ var gcalarm = angular.module('gcalarm', ['ionic', 'ionic-timepicker', 'standard-
     templateUrl: 'templates/menu.html',
     controller: 'gcalarmController'
   })
-    .state('app.alarm', {
-    url: '/alarm',
+  .state('app.status', {
+    url: '/status',
     views: {
       'menuContent': {
         abstract: true,
-        templateUrl: 'templates/alarm.html',
+        templateUrl: 'templates/status.html',
         controller: 'statusController'
       }
     }
   })
-
+  .state('app.alarmactive', {
+      url: '/alarmactive',
+      views: {
+        'menuContent': {
+          templateUrl: 'templates/alarmactive.html',
+          controller: 'alarmactiveController'
+        }
+      }
+  })
   .state('app.account', {
     url: '/account',
     views: {
@@ -50,7 +58,6 @@ var gcalarm = angular.module('gcalarm', ['ionic', 'ionic-timepicker', 'standard-
       }
     }
   })
-
   .state('app.location', {
       url: '/location',
       views: {
@@ -69,7 +76,6 @@ var gcalarm = angular.module('gcalarm', ['ionic', 'ionic-timepicker', 'standard-
         }
       }
     });
-
 /*  .state('app.single', {
     url: '/playlists/:playlistId',
     views: {
@@ -80,5 +86,5 @@ var gcalarm = angular.module('gcalarm', ['ionic', 'ionic-timepicker', 'standard-
     }
   })*/
   // if none of the above states are matched, use this as the fallback
-  $urlRouterProvider.otherwise('/app/alarm');
+  $urlRouterProvider.otherwise('/app/status');
 });

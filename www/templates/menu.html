@@ -18,8 +18,11 @@
     </ion-header-bar>
     <ion-content>
       <ion-list>
-       <ion-item menu-close href="#/app/alarm">
-          <b>GC Alarm</b>
+        <ion-item ng-show="true" menu-close href="#/app/alarmactive">
+          <b>Active</b>
+        </ion-item>
+        <ion-item menu-close href="#/app/status">
+          Status
         </ion-item>
         <ion-item menu-close href="#/app/location">
           Location

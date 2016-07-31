@@ -44,9 +44,9 @@
     <file url="file://$PROJECT_DIR$/www/status/statusController.js" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/www/status/statusService.js" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/www/templates/account.html" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/www/templates/alarm.html" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/www/templates/location.html" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/www/templates/menu.html" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/www/templates/settings.html" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/www/templates/status.html" charset="UTF-8" />
   </component>
 </project>
