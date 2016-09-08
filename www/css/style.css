@@ -1,5 +1,37 @@
-.alarmPosition {
-  position: absolute;
-  top: 40%;
-  width: 100%;
+ion-popover-view.fit {
+  height: auto;
+}
+
+ion-popover-view.fit ion-content {
+  position: relative;
+}
+
+.platform-android ion-popover-view.fit {
+  margin-top: 10px;
+}
+
+.platform-ios ion-popover-view.fit .item:first-child {
+  border-radius: 10px 10px 0 0;
+}
+.platform-ios ion-popover-view.fit .item:last-child {
+  border-radius: 0 0 10px 10px;
+}
+
+.button{
+  font-family: 'Comic Neue', sans-serif;
+  font-weight: 700;
+  font-size: 1em !important;
+  line-height: 1.5;
+}
+
+.setNamePopup .popup-head {
+  display: none;
+}
+.namePopupText {
+}
+.nameAdd {
+  width:100%;
+}
+.backgroundImageAdd {;
+  width:100%;
 }

@@ -1,136 +1,123 @@
-gcalarm.controller('gcalarmController', ['$scope', '$ionicModal', '$timeout', '$ionicPopup', function($scope, $ionicModal, $timeout, $ionicPopup) {
+var FILENAME = "gcalarmController.js:";
+gcalarm.controller('gcalarmController', ['$scope', '$rootScope', '$localStorage', '$ionicModal', '$timeout', '$ionicPopup', '$ionicPopover', '$ionicPlatform', '$cordovaCamera', '$translate', 'statusService', function ($scope, $rootScope, $localStorage, $ionicModal, $timeout, $ionicPopup, $ionicPopover, $ionicPlatform, $cordovaCamera, $translate, statusService) {
+  var OBJECTNAME = "gcalarmController:";
 
-}]);
-/*
-angular.module('starter.controllers', ['ionic-timepicker', 'standard-time-meridian', 'ion-place-tools'])
+  console.info(FILENAME + OBJECTNAME + "calling popoverMainSettings");
+  popoverMainSettings();
 
-.controller('gcalarmController', function($scope, $ionicModal, $timeout, $ionicPopup) {
-
-  // With the new view caching in Ionic, Controllers are only called
- // when they are recreated or on app start, instead of every page change.
-  // To listen for when this page is active (for example, to refresh data),
-  // listen for the $ionicView.enter event:
-  //$scope.$on('$ionicView.enter', function(e) {
-  //});
-    $scope.googleConnnectButtonText = "google unconnected";
-
-    $scope.settingsDaysList = [
-      { text: "Mon", checked: false },
-      { text: "Tue", checked: false },
-      { text: "Wed", checked: false },
-      { text: "Thu", checked: false },
-      { text: "Fri", checked: false },
-      { text: "Sat", checked: false },
-      { text: "Sun", checked: false }
-    ];
-
-    $scope.settingsFeaturesList = [
-      { text: "Google Tasks", checked: false },
-      { text: "Weather", checked: false },
-      { text: "Commute Time", checked: false }
-    ];
-
-    // Triggered on a button click, or some other target
-    $scope.googleConnect = function() {
-      $scope.data = {};
-      // An elaborate, custom popup
-      var googleConnectPopup = $ionicPopup.show({
-        template: '<div id="authorize-div" style="display: none"><span>Authorize access to Google Tasks API</span><!--Button for the user to click to initiate auth sequence --><button id="authorize-button" onclick="handleAuthClick(event)">Authorize </button></div><pre id="output"></pre>',
-        //template: '<input type="text" ng-model="data.email" placeholder="email"></br><input type="password" ng-model="data.password" placeholder="password">',
-        /!*        title: 'google',*!/
-        subTitle: 'google connection information',
-        scope: $scope,
-        buttons: [
-          { text: 'cancel' },
-          {
-            text: '<b>connect</b>',
-            type: 'button-positive',
-            onTap: function(e) {
-              if (!$scope.data.password) {
-                //don't allow the user to close unless he enters wifi password
-                e.preventDefault();
-              } else {
-                return $scope.data.password;
-              }
-            }
-          }
-        ]
-      });
-
-      googleConnectPopup.then(function(res) {
-        console.log('googleConnectPopup!', res);
-      });
-
-      $timeout(function() {
-        googleConnectPopup.close(); //close the popup after 3 seconds for some reason
-      }, 30000);
-    };
-    //end account
-  // Form data for the login modal
-  $scope.loginData = {};
-  $scope.timePickerObject = {
-    etime: ((new Date()).getHours() * 60 * 60),  //Optional
-    step: 05,  //Optional
-    format: 12,  //Optional
-    titleLabel: '12-hour Format',  //Optional
-    setLabel: 'Set',  //Optional
-    closeLabel: 'Close',  //Optional
-    setButtonType: 'button-positive',  //Optional
-    closeButtonType: 'button-stable',  //Optional
-    callback: function (val) {    //Mandatory
-      timePickerCallback(val);
-    }
-  };
-
-  function timePickerCallback(val) {
-    if (typeof (val) === 'undefined') {
-      console.log('Time not selected');
-    } else {
-      var selectedTime = new Date(val * 1000);
-      console.log('Selected epoch is : ', val, 'and the time is ', selectedTime.getUTCHours(), ':', selectedTime.getUTCMinutes(), 'in UTC');
-    }
+  console.info(FILENAME + OBJECTNAME + "get name if exist");
+  if ($localStorage["name"]) {
+    $scope.name = $localStorage["name"];
+  }
+  else {
+    $scope.name = $translate.instant("add.name");
   }
 
-  // Create the login modal that we will use later
-  $ionicModal.fromTemplateUrl('templates/login.html', {
-    scope: $scope
-  }).then(function(modal) {
-    $scope.modal = modal;
-  });
+  console.info(FILENAME + OBJECTNAME + "get background image if exist");
 
-  // Triggered in the login modal to close it
-  $scope.closeLogin = function() {
-    $scope.modal.hide();
+  statusService.setExistingBackgroundImage();
+
+  $scope.setName = function () {
+    var METHODNAME = "setName:";
+
+    console.info(FILENAME + OBJECTNAME + METHODNAME);
+
+    var setNamePopup = $ionicPopup.show({
+      template: '<input type="text" style="height:40px;font-size:14pt;" class="namePopupText" ng-value="name" placeholder="{{name}}">',
+      scope: $scope,
+      cssClass: 'setNamePopup',
+      buttons: [
+        {
+          text: '<b>Save</b>',
+          type: 'button-positive',
+          onTap: function (e) {
+            $scope.name = $(".namePopupText").val();
+            $localStorage["name"] = $scope.name;
+          }
+        }, {
+          text: 'Cancel'
+        },]
+    });
+
+    console.debug(FILENAME + OBJECTNAME + METHODNAME + +"popup creation text=" + setNamePopup);
+    $scope.popover.hide();
   };
 
-  // Open the login modal
-  $scope.login = function() {
-    $scope.modal.show();
+  $scope.setBackgroundImage = function () {
+    var METHODNAME = "setBackgroundImage:";
+
+    console.info(FILENAME + OBJECTNAME + METHODNAME);
+
+    this.setBackgroundImage = function () {
+      var defer = $.Deferred();
+      var options = {
+        quality: 100,
+        destinationType: Camera.DestinationType.DATA_URL,
+        sourceType: Camera.PictureSourceType.PHOTOLIBRARY,
+        allowEdit: true,
+        encodingType: Camera.EncodingType.JPEG,
+        targetWidth: window.innerWidth,
+        targetHeight: window.innerHeight,
+        popoverOptions: CameraPopoverOptions,
+        saveToPhotoAlbum: false
+      };
+      $cordovaCamera.getPicture(options).then(function (imageData) {
+        console.info(FILENAME + OBJECTNAME + METHODNAME + "retrieved picture from mobile device");
+
+        var imageUri = "data:image/jpeg;base64," + imageData;
+
+        console.debug(FILENAME + OBJECTNAME + METHODNAME + "retrieved picture from device");
+
+        $localStorage["imageUri"] = imageUri;
+        console.info(FILENAME + OBJECTNAME + METHODNAME + "set device to background image" + imageUri);
+        statusService.setCSSBackgroundImage(imageUri);
+        defer.resolve(imageUri);
+      });
+      return defer.promise();
+    };
   };
 
-  // Perform the login action when the user submits the login form
-  $scope.doLogin = function() {
-    console.log('Doing login', $scope.loginData);
+  $scope.addTiles = function () {
+    var defer = $.Deferred();
 
-    // Simulate a login delay. Remove this and replace with your login
-    // code if using a login system
-    $timeout(function() {
-      $scope.closeLogin();
-    }, 1000);
+    defer.resolve(true);
+
+    return defer.promise();
   };
-})
 
-.controller('PlaylistsCtrl', function($scope) {
-  $scope.playlists = [
-    { title: 'Reggae', id: 1 },
-    { title: 'Chill', id: 2 },
-    { title: 'Dubstep', id: 3 },
-    { title: 'Indie', id: 4 },
-    { title: 'Rap', id: 5 },
-    { title: 'Cowbell', id: 6 }
-  ];
-})
+  function popoverMainSettings() {
+    var METHODNAME = "popoverMainSettings:";
 
-.controller('PlaylistCtrl', function($scope, $stateParams) {
-});
-*/
+    console.info(FILENAME + OBJECTNAME + METHODNAME);
+
+    // .fromTemplateUrl() method
+    $ionicPopover.fromTemplateUrl('templates/mainSettings.html', {
+      scope: $scope
+    }).then(function (popover) {
+      $scope.popover = popover;
+    });
+    $scope.openPopover = function ($event) {
+      if ($scope.popover.isShown()) {
+        $scope.popover.hide();
+      }
+      else {
+        $scope.popover.show($event);
+      }
+    };
+    $scope.closePopover = function () {
+      $scope.popover.hide();
+    };
+    //Cleanup the popover when we're done with it!
+    $scope.$on('$destroy', function () {
+      $scope.popover.remove();
+    });
+    // Execute action on hide popover
+    $scope.$on('popover.hidden', function () {
+      // Execute action
+    });
+    // Execute action on remove popover
+    $scope.$on('popover.removed', function () {
+      // Execute action
+    });
+  }
+}]);

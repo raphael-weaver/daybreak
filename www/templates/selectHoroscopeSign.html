@@ -1,0 +1,12 @@
+<ion-popover-view class="selectHoroscopeSign fitSelectHoroscopeSign">
+  <ion-content>
+    <ion-list>
+      <ion-radio ng-repeat="horoscopeSign in horoscopeList"
+                 ng-value="true"
+                 ng-model="horoscopeSign.selected"
+                 ng-click="setHoroscopeSign(horoscopeSign)">
+        {{ horoscopeSign.sign }}
+      </ion-radio>
+    </ion-list>
+  </ion-content>
+</ion-popover-view>

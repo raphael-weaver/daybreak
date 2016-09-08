@@ -1,13 +1,51 @@
+.tabs{
+  top: 0px !important;
+}
 .settingDayToggles {
   position: absolute;
+  top: 7%;
   width: 50%;
 }
 .settingFeatureToggles {
   position: absolute;
+  top: 7%;
   left: 50%;
+  width: 50%;
+}
+.buzzToggle {
+  position: absolute;
+  left: 0%;
+  top: 70%;
+  width: 50%;
+}
+.horoscopeSignSelect {
+  position: absolute;
+  left: 50%;
+  top: 68%;
   width: 50%;
 }
 .saveLocation {
   position: absolute;
-  top: 80%;
+  top: 90%;
+}
+ion-popover-view.fitSelectHoroscopeSign {
+}
+ion-popover-view.fitSelectHoroscopeSign ion-content {
+
+}
+.platform-android ion-popover-view.fitSelectHoroscopeSign {
+  margin-top: -90%;
+  position: relative;
+  height: 300px;
+}
+.platform-ios ion-popover-view.fitSelectHoroscopeSign {
+  margin-top: -90%;
+  position: relative;
+  height: 300px;
+}
+.platform-ios ion-popover-view.fitSelectHoroscopeSign .item:first-child {
+  border-radius: 10px 10px 0 0;
+}
+.platform-ios ion-popover-view.fitSelectHoroscopeSign .item:last-child {
+  border-radius: 0 0 10px 10px;
 }

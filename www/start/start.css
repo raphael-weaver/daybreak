@@ -1,0 +1,27 @@
+.tile-container {
+  overflow-y: scroll;
+  width:100%;
+  height:100%;
+}
+.tile-wide {
+  width:63%;
+  height:31.5%;
+}
+.tile-small {
+  width:30%;
+  height:64%;
+}
+.tile-large {
+  width:63%;
+  height:30%;
+}
+.tile-square {
+  width:30%;
+  height:30%;
+}
+.activeAlarmOptionsPopup .popup {
+  width: 80% !important;
+}
+.activeAlarmOptionsPopup .popup-head {
+  display: none;
+}

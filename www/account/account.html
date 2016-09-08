@@ -1,9 +1,10 @@
 <ion-view view-title="Account">
   <ion-content>
     <div class="googleConnect">
-      <button class="button button button-block button-positive" ng-click="googleConnect()">
-        <div class="googleConnnect buttonText">
-          {{googleConnnectButtonText}}
+      <button class="button button-block button-positive" ng-click="googleConnect()">
+         <div ng-if="googleConnected" translate="{{ 'button.googleConnnect.text' }}">
+         </div>
+        <div ng-if="!googleConnected" translate="{{ 'button.googleUnConnnect.text' }}">
         </div>
       </button>
     </div>

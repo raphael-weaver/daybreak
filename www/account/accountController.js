@@ -1,46 +1,68 @@
-gcalarm.controller('accountController', ['$scope', 'accountService', '$ionicModal', '$timeout', '$ionicPopup', '$cordovaOauth', function($scope, accountService, $ionicModal, $timeout, $ionicPopup, $cordovaOauth) {
+var FILENAME = "accountController.js:";
+gcalarm.controller('accountController', ['$scope', 'accountService', 'googleLoginService', 'statusService', '$http', '$ionicModal', '$timeout', '$ionicPopup', '$cordovaOauth', '$translate', function ($scope, accountService, googleLoginService, statusService, $http, $ionicModal, $timeout, $ionicPopup, $cordovaOauth, $translate) {
+  var OBJECTNAME = "accountController:";
 
-  var googleTokenReturn = accountService.getGoogleToken();
-  $.when(googleTokenReturn).done(function(data) {
-    var googleTokenJSObject;
-    if(typeof data !== "undefined") {
-      if (data !== "") {
-        googleTokenJSObject = JSON.parse(data);
-        handleAuthResult(googleTokenJSObject);
-        gapi.auth.setToken(googleTokenJSObject);
-        $scope.googleConnnectButtonText = "google connected";
-      }
-      else {
-        $scope.googleConnnectButtonText = "google unconnected";
-      }
-      $scope.googleToken = googleTokenJSObject;
+  statusService.setExistingBackgroundImage();
+
+  var promise = googleLoginService.checkIfLoggedIn();
+  promise.then(function (data) {
+    if (data) {
+      console.info(FILENAME + OBJECTNAME + "changing google connect button to " + $scope.googleConnnectButtonText);
+      console.info(FILENAME + OBJECTNAME + "google login successful");
+      console.info(FILENAME + OBJECTNAME + JSON.stringify(data));
+
+      $scope.googleConnected = true;
     }
+    else {
+      console.info(FILENAME + OBJECTNAME + "changing google connect button to " + $scope.googleConnnectButtonText);
+
+      $scope.googleConnected = false;
+    }
+  }, function (data) {
+    $scope.google_data = data;
+
+    console.error(FILENAME + OBJECTNAME + JSON.stringify(google_data));
   });
-
   // Triggered on a button click, or some other target
-  $scope.googleConnect = function() {
-    if($scope.googleConnnectButtonText == "google connected"){
-      $scope.googleToken = "";
-      $scope.googleConnnectButtonText = "google unconnected";
-      accountService.deleteGoogleToken();
-      gapi.auth.signOut();
-    }
-    else{
-      var clientId = '674271502244-s7bdlo86hv8nmsbda8n4ga68h2rjolfo.apps.googleusercontent.com';
-      var scopes   = ['https://www.googleapis.com/auth/tasks.readonly', 'profile'];
-      $cordovaOauth.google(clientId, scopes).then(function(result) {
-        $scope.googleConnnectButtonText = "google connected";
-        // call googleLogin.handleAuthResult to initialize angular-googleapi callbacks
-        handleAuthResult(result);
-        accountService.saveGoogleToken(result);
-        $scope.googleToken = result;
-        // for the callbacks to work, set authentication result as gapi access_token
-        gapi.auth.setToken(result);
+  $scope.googleConnect = function () {
+    var METHODNAME = "googleConnect:";
 
-      }, function(error) {
-        $scope.googleConnnectButtonText = "google unconnected";
+    if (!$scope.googleConnected) {
+
+      console.info(FILENAME + OBJECTNAME + METHODNAME + "changing google connect button to " + $scope.googleConnnectButtonText);
+
+      var promise = googleLoginService.startLogin();
+      promise.then(function (data) {
+        $scope.google_data = data;
+
+        $scope.googleConnected = true;
+
+        console.info(FILENAME + OBJECTNAME + "google login successful");
+        console.info(FILENAME + OBJECTNAME + JSON.stringify(data));
+      }, function (data) {
+        $scope.google_data = data;
+
+        console.error(FILENAME + OBJECTNAME + JSON.stringify(google_data));
       });
     }
-  };
+    else {
+      console.info(FILENAME + OBJECTNAME + METHODNAME + "changing google connect button to " + $scope.googleConnnectButtonText);
 
+      var isLoggedOut = googleLoginService.logOut();
+      $.when(isLoggedOut).done(function (data) {
+        if (data) {
+
+          $scope.googleConnected = false;
+
+          console.info(FILENAME + OBJECTNAME + JSON.stringify(data));
+        }
+      }, function (data) {
+        $scope.google_data = data;
+
+        console.error(FILENAME + OBJECTNAME + JSON.stringify($scope.google_data));
+      });
+    }
+
+    console.info(FILENAME + OBJECTNAME + METHODNAME + "exited");
+  };
 }]);

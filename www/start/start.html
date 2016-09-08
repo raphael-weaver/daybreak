@@ -1,0 +1,35 @@
+<ion-view view-title="Status">
+  <ion-content>
+    <div ng-controller="gcalarmController">
+    </div>
+    <ion-view>
+      <div class="tile-container">
+        <div class="tile-small bg-red fg-white" data-role="tile" ng-click="activeAlarmOptions()">
+          <div class="tile-content iconic">
+          </div>
+          <span class="tile-label">{{ "alarmactive" | translate }}</span>
+        </div>
+        <div class="tile-wide bg-orange fg-white" data-role="tile" onclick="document.location.href='#/app/status'">
+          <div class="tile-content iconic">
+          </div>
+          <span class="tile-label">{{ "status" | translate }}</span>
+        </div>
+        <div class="tile-wide bg-cyan fg-white" data-role="tile" onclick="document.location.href='#/app/settings'">
+          <div class="tile-content iconic">
+          </div>
+          <span class="tile-label">{{ "settings" | translate }}</span>
+        </div>
+        <div class="tile-large bg-green fg-white" data-role="tile" onclick="document.location.href='#/app/location'">
+          <div class="tile-content iconic">
+          </div>
+          <span class="tile-label">{{ "location" | translate }}</span>
+        </div>
+        <div class="tile-square bg-violet fg-white" data-role="tile" onclick="document.location.href='#/app/account'">
+          <div class="tile-content iconic">
+          </div>
+          <span class="tile-label">{{ "account" | translate }}</span>
+        </div>
+      </div>
+    </ion-view>
+  </ion-content>
+</ion-view>

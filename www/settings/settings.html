@@ -1,19 +1,62 @@
 <ion-view view-title="Setting">
   <ion-content>
-    <div class="settingDayToggles">
-      <ion-toggle toggle-balanced ng-repeat="day in settingsDaysList"
-                  ng-model="day.checked"
-                  ng-checked="day.checked">
-        {{ day.text }}
-      </ion-toggle>
+    <div ng-controller="notificationController">
     </div>
-    <div class="settingFeatureToggles">
-      <ion-toggle toggle-balanced ng-repeat="feature in settingsFeaturesList"
-                  ng-model="feature.checked"
-                  ng-checked="feature.checked">
-        {{ feature.text }}
-      </ion-toggle>
-    </div>
-    <button class="saveLocation button button-block button-positive" ng-click="saveSettings()">save</button>
+    <ion-tabs class="settingTabs tabs-positive" >
+      <ion-tab title="{{'weekday' | translate}}">
+        <div class="settingDayToggles">
+          <ion-toggle toggle-balanced ng-repeat="day in settingsWeekdayList"
+                      ng-model="day.checked"
+                      ng-checked="day.checked">
+            {{ day.text }}
+          </ion-toggle>
+        </div>
+        <div class="settingFeatureToggles">
+          <ion-toggle toggle-balanced ng-repeat="feature in settingsWeekdayFeaturesList"
+                      ng-model="feature.checked"
+                      ng-checked="feature.checked">
+            {{ feature.text }}
+          </ion-toggle>
+        </div>
+        <div class="buzzToggle">
+          <ion-toggle toggle-balanced ng-model="buzzSetting.weekday.checked" ng-checked="buzzSetting.weekday.checked">
+            {{buzzSetting.weekday.text}}
+          </ion-toggle>
+        </div>
+        <div class="horoscopeSignSelect">
+          <p>
+            <button class="button button-block button-light" ng-click="openPopover($event)" translate="horoscopeSign"></button>
+          </p>
+        </div>
+        <button class="saveLocation button button-block button-positive" ng-click="saveSettings()" translate="button.save.text"></button>
+      </ion-tab>
+      <ion-tab title="{{'weekend' | translate}}">
+        <div class="settingDayToggles">
+          <ion-toggle toggle-balanced ng-repeat="day in settingsWeekendList"
+                      ng-model="day.checked"
+                      ng-checked="day.checked">
+            {{ day.text }}
+          </ion-toggle>
+        </div>
+        <div class="settingFeatureToggles">
+          <ion-toggle toggle-balanced ng-repeat="feature in settingsWeekendFeaturesList"
+                      ng-model="feature.checked"
+                      ng-checked="feature.checked">
+            {{ feature.text }}
+          </ion-toggle>
+        </div>
+        <div class="buzzToggle">
+          <ion-toggle toggle-balanced ng-model="buzzSetting.weekend.checked" ng-checked="buzzSetting.weekend.checked">
+            {{buzzSetting.weekend.text}}
+          </ion-toggle>
+        </div>
+        <div class="horoscopeSignSelect">
+          <p>
+            <button class="button button-block button-light" ng-click="openSelectHoroscopeSignPopover($event)" translate="horoscopeSign"></button>
+          </p>
+        </div>
+        <button class="saveLocation button button-block button-positive" ng-click="saveSettings()" translate="button.save.text"></button>
+      </ion-tab>
+    </ion-tabs>
   </ion-content>
 </ion-view>

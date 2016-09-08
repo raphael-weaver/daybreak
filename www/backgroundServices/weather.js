@@ -1,122 +1,145 @@
-//Model
-var WeatherModel = (function(){
-  function WeatherModel(){
-    this.minTemperature = 0;
-    this.maxTemperature = 0;
-    this.precipitation  = 0;
-  }
-  return WeatherModel;
-})();
-var LocationModel = (function(){
-  function LocationModel(){
-    this.latitude = 0;
-    this.longitude = 0;
-  }
-  return LocationModel;
-})();
-//Module(Service)
-gcalarm.service('weather', function() {
+var FILENAME = "weather.js:";
+gcalarm.service('weather', ['$http', '$translate', 'locationService', 'textToSpeech', function($http, $translate, locationService, textToSpeech) {
+  var OBJECTNAME = "weather:";
 
-  this.getTodaysWeather = function(date) {
-    getWeatherByDate(date, getHomeLocation());
+  var homeLocationLatLong = {latitude:"",longitude:""};
+
+  this.getWeatherByDate = function(date) {
+    var METHODNAME = "getWeatherByDate:";
+
+    console.info(FILENAME + OBJECTNAME + METHODNAME);
+
+    var defer = $.Deferred();
+    var weatherStatus = getWeatherByDate(date);
+    $.when(weatherStatus).done(function(data) {
+      if(typeof data != "undefined"){
+        console.info(FILENAME + OBJECTNAME + METHODNAME + "retrieved weather data successfully");
+        weather = data;
+        defer.resolve(weather);
+      }
+    });
+    return defer.promise();
   };
 
   this.getWeather = function() {
-    getWeatherByDate(new Date(), getHomeLocation());
+    var METHODNAME = "getWeather:";
+
+    console.info(FILENAME + OBJECTNAME + METHODNAME);
+
+    var defer = $.Deferred();
+    var weatherStatus = getWeatherByDate(new Date());
+    $.when(weatherStatus).done(function(data) {
+      if(typeof data != "undefined"){
+        console.info(FILENAME + OBJECTNAME + METHODNAME + "retrieved weather data successfully");
+        weather = data;
+        defer.resolve(weather);
+      }
+    });
+    return defer.promise();
   };
 
-  function getWeatherByDate(date, homeLocation){
+  function getWeatherByDate(date){
+    var METHODNAME = "getWeatherByDate:";
 
-    var x2js = new X2JS();
+    console.info(FILENAME + OBJECTNAME + METHODNAME);
 
-    var url = "http://graphical.weather.gov/xml/SOAP_server/ndfdXMLclient.php?";
+    var defer = $.Deferred();
 
-    var minDateTime = date;
+    var minDateTime = new Date(date);
     minDateTime.setHours(0);
     minDateTime.setMinutes(0);
     minDateTime.setSeconds(0);
 
-    var maxDateTime = date;
+    var maxDateTime = new Date(date);
     maxDateTime.setHours(23);
     maxDateTime.setMinutes(59);
     maxDateTime.setSeconds(59);
 
-    var locationModel = getLatLong();
+    console.info(FILENAME + OBJECTNAME + METHODNAME + "minimum and maximum time for today's event set");
 
-    var params =
-    {
-      whichClient:"NDFDgen",
-      lat:locationModel.latitude,
-      lon:locationModel.longitude,
-      begin:minDateTime,
-      end:maxDateTime,
-      product:"time-series",
-      maxt:"maxt",
-      mint:"mint",
-      qpf:"qpf",
-      Submit:"Submit"
-    };
-    var paramsStr = $.param( params );
-
-    var weatherModel = WeatherModel();
-
-    $.ajax({
-      type: "GET",
-      url : url + paramsStr,
-      dataType:"xml",
-      cache: false,
-      error:function (xhr, ajaxOptions, thrownError){
-        debugger;
-        alert(xhr.statusText);
-        alert(thrownError);
-      },
-      success : function(xml) {
-
-        var json = x2js.xml2js(xml);
-
-        weatherModel.minTemperature = json.dwml.data.parameters.temperature[0].value.toString();
-        weatherModel.maxTemperature = json.dwml.data.parameters.temperature[1].value.toString();
-        weatherModel.precipitation  = json.dwml.data.parameters.probability-of-precipitation.value.toString();
-
-      }
-    });
-  }
-
-  function getHomeLocation() {
-    gcalarmDB.transaction(function (tx) {
-      tx.executeSql("SELECT * FROM LOCATION;", [], function (tx, resultSet) {
-        fromLocation = resultSet.rows.item(0).fromLocation;
-        toLocation = resultSet.rows.item(0).toLocation;
-
-        return fromLocation;
-      }, function (tx, error) {
-        tx.executeSql('CREATE TABLE LOCATION (fromLocation, toLocation)');
-        return "";
-      });
-    }, function (error) {
-      console.log('transaction error: ' + error.message);
-    }, function () {
-      console.log('transaction ok');
-    });
-  }
-
-  function getLatLong() {
-    var location = new LocationModel();
-
-    geocoder = new google.maps.Geocoder();
-
-    geocoder.geocode( { 'address': getHomeLocation()}, function(results, status) {
-      if (status == google.maps.GeocoderStatus.OK) {
-        location.latitude  = results[0].geometry.location.lat();
-        location.longitude = results[0].geometry.location.lng();
-      }
-
-      else {
-        alert("Geocode was not successful for the following reason: " + status);
+    var homeLatLong = locationService.getHomeLatLongCoordinates();
+    $.when(homeLatLong).done(function(data) {
+      if(typeof data != "undefined"){
+        homeLocationLatLong = data;
+        if(!((homeLocationLatLong.latitude).toString().isEmpty()) && !((homeLocationLatLong.longitude).toString().isEmpty())){
+          if(!isLocaleEnglish()) {
+            var weatherSummary = callLocaleWeatherApi(homeLocationLatLong);
+          }
+          else {
+            var weatherSummary = callWeatherApi(homeLocationLatLong);
+          }
+          $.when(weatherSummary).done(function(data) {
+            if(typeof data != "undefined"){
+              weatherSummary = data;
+              defer.resolve(weatherSummary);
+            }
+          });
+        }
+        else{
+          textToSpeech.playText($translate('location.work.weather.isEmpty'));
+        }
       }
     });
 
-    return location;
+    return defer.promise();
   }
 
-});
+  function callWeatherApi(homeLocationLatLong){
+    var METHODNAME = "callWeatherApi:";
+
+    console.info(FILENAME + OBJECTNAME + METHODNAME);
+
+    var defer = $.Deferred();
+
+    var http = $http({
+      url: "http://forecast.weather.gov/MapClick.php",
+      method: 'GET',
+      params: {
+        lat:homeLocationLatLong.latitude,
+        lon:homeLocationLatLong.longitude,
+        FcstType:"json"
+      }
+    });
+    http.then(function (data) {
+      console.debug(FILENAME + OBJECTNAME + METHODNAME + JSON.stringify(data));
+
+      defer.resolve(data.data.data.text[0]);
+    }, function errorCallback(errorResponse) {
+      console.error(FILENAME + OBJECTNAME + METHODNAME + JSON.stringify(errorResponse));
+    });
+
+    return defer.promise();
+  }
+
+  function callLocaleWeatherApi(homeLocationLatLong){
+    var METHODNAME = "callLocaleWeatherApi:";
+
+    console.info(FILENAME + OBJECTNAME + METHODNAME);
+
+    var defer = $.Deferred();
+
+    var wundergroundApiKey = "a0bd0ef3222acea4";
+    var url = "http://api.wunderground.com/api/" + wundergroundApiKey + "/forecast/lang:" + $translate("locale.weather") +"/q/" + homeLocationLatLong.latitude + ","  + homeLocationLatLong.longitude + ".json?";
+
+    var http = $http({
+      url: url,
+      method: 'GET'
+    });
+    http.then(function (data) {
+      console.debug(FILENAME + OBJECTNAME + METHODNAME + JSON.stringify(data));
+
+      var forecast = data.data.forecast.txt_forecast;
+
+      console.info(FILENAME + OBJECTNAME + METHODNAME + "getting specific forecast data from json string return");
+
+      var weatherForecast = forecast.forecastday[0].fcttext + " " + " Tonight " + forecast.forecastday[1].fcttext;
+      defer.resolve(weatherForecast);
+    }, function errorCallback(errorResponse) {
+      console.error(FILENAME + OBJECTNAME + METHODNAME + JSON.stringify(errorResponse));
+    });
+
+    return defer.promise();
+  }
+
+
+}]);

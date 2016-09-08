@@ -1,36 +1,17 @@
-/*
-Task Model - Google Api
-{
-  "kind": "tasks#task",
-  "id": string,
-  "etag": etag,
-  "title": string,
-  "updated": datetime,
-  "selfLink": string,
-  "parent": string,
-  "position": string,
-  "notes": string,
-  "status": string,
-  "due": datetime,
-  "completed": datetime,
-  "deleted": boolean,
-  "hidden": boolean,
-  "links": [
-    {
-      "type": string,
-      "description": string,
-      "link": string
-    }
-  ]
-}
-*/
+var FILENAME = "googleEvent.js:";
+gcalarm.service('googleEvent',['$http', '$translate', 'googleLoginService', function($http, $translate, googleLoginService) {
+  var OBJECTNAME = "googleEvent:";
 
-//Module(Service)
-gcalarm.service('googleEvent', function() {
+  var eventList = "";
+  var timeRange = {minDateTime:new Date(),maxDateTime:new Date()};
+  var googleData = "";
 
-  this.getTodaysTasks = function() {
+  this.getTodaysEvents = function() {
+    var METHODNAME = "getTodaysEvents:";
 
-    loadTasksApi();
+    console.info(FILENAME + OBJECTNAME + METHODNAME);
+
+    var defer = $.Deferred();
 
     var minDateTime = new Date();
     minDateTime.setHours(0);
@@ -42,29 +23,29 @@ gcalarm.service('googleEvent', function() {
     maxDateTime.setMinutes(59);
     maxDateTime.setSeconds(59);
 
-    var request = gapi.client.tasks.tasklists.list({
-      'maxResults': 100,
-      'dueMin': minDateTime,
-      'dueMax': maxDateTime
-    });
+    timeRange.minDateTime = minDateTime;
+    timeRange.maxDateTime = maxDateTime;
 
-    request.execute(function(resp) {
-      appendPre('Task Lists:');
-      var taskLists = resp.items;
-      if (taskLists && taskLists.length > 0) {
-        return taskLists;
-      } else {
-        appendPre('No task lists found.');
+    console.info(FILENAME + OBJECTNAME + METHODNAME + "minimum and maximum time for today's event set");
+
+    eventList = this.getEventList(timeRange);
+    $.when(eventList).done(function(data) {
+      if(typeof data != "undefined"){
+        console.debug(FILENAME + OBJECTNAME + METHODNAME + data);
+
+        defer.resolve(data);
       }
     });
+    return defer.promise();
   };
 
-  this.getTasks = function(date) {
+  this.getEvents = function(date) {
+    var METHODNAME = "getEvents:";
 
-    loadTasksApi();
+    console.info(FILENAME + OBJECTNAME + METHODNAME);
 
-    var minDateTime = date;
-    minDateTime.setHours(0);
+    var defer = $.Deferred();
+
     minDateTime.setMinutes(0);
     minDateTime.setSeconds(0);
 
@@ -73,28 +54,54 @@ gcalarm.service('googleEvent', function() {
     maxDateTime.setMinutes(59);
     maxDateTime.setSeconds(59);
 
-    var request = gapi.client.tasks.tasklists.list({
-      'maxResults': 100,
-      'dueMin': minDateTime,
-      'dueMax': maxDateTime
-    });
+    timeRange.minDateTime = minDateTime;
+    timeRange.maxDateTime = maxDateTime;
 
-    request.execute(function(resp) {
-      appendPre('Task Lists:');
-      var taskLists = resp.items;
-      if (taskLists && taskLists.length > 0) {
-        return taskLists;
-      } else {
-        appendPre('No task lists found.');
+    console.info(FILENAME + OBJECTNAME + METHODNAME + "minimum and maximum time for today's event set");
+    console.info(FILENAME + OBJECTNAME + METHODNAME + "minimum time:" + minDateTime + "and maximum time:" + maxDateTime);
+
+    eventList = this.getEventList(timeRange);
+    $.when(eventList).done(function(data) {
+      if(typeof data != "undefined"){
+        console.debug(FILENAME + OBJECTNAME + METHODNAME + JSON.stringify(data));
+
+        defer.resolve(data);
       }
     });
+    return defer.promise();
   };
 
-  /**
-   * Load Google Tasks API client library.
-   */
-  function loadTasksApi() {
-    gapi.client.load('tasks', 'v1');
-  }
+  this.getEventList = function (timeRange) {
+    var METHODNAME = "getEventList:";
 
-});
+    console.info(FILENAME + OBJECTNAME + METHODNAME);
+
+    var defer = $.Deferred();
+    var promise = googleLoginService.authorize();
+    promise.then(function (data) {
+      googleData = data;
+      var http = $http({
+        url: 'https://www.googleapis.com/calendar/v3/calendars/primary/events',
+        method: 'GET',
+        params: {
+          access_token: googleData.accessToken,
+          key: googleData.apiKey,
+          timeMin:timeRange.minDateTime,
+          timeMax:timeRange.maxDateTime,
+          language:$translate("locale.googleApi")
+        }
+      });
+      http.then(function (data) {
+        var eventListData = data.data.items;
+        console.debug(FILENAME + OBJECTNAME + METHODNAME + " event data " + JSON.stringify(eventListData));
+        defer.resolve(eventListData);
+      }, function errorCallback(errorResponse) {
+        console.error(FILENAME + OBJECTNAME + METHODNAME + JSON.stringify(errorResponse));
+      });
+    }, function (data) {
+      googleData = data;
+    });
+    return defer.promise();
+  };
+
+}]);
