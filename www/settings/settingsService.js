@@ -245,16 +245,15 @@ gcalarm.service('settingsService', ['$ionicPlatform', '$locale', '$translate', f
       tx.executeSql('DROP TABLE DAY', []);
       tx.executeSql('CREATE TABLE IF NOT EXISTS DAY (day TEXT, isOn TEXT)');
 
-      for (var counter = 0; counter < settingsWeekdayList.length; counter++) {
-        var day = settingsWeekdayList[counter].text;
-        var isOn = settingsWeekdayList[counter].checked;
-        tx.executeSql('INSERT INTO DAY (day, isOn) VALUES (?,?)', [$locale.DATETIME_FORMATS.SHORTDAY[counter], isOn]);
-      }
-      for (var counter = 0; counter < settingsWeekendList.length; counter++) {
-        var day = settingsWeekendList[counter].text;
-        var isOn = settingsWeekendList[counter].checked;
-        tx.executeSql('INSERT INTO DAY (day, isOn) VALUES (?,?)', [$locale.DATETIME_FORMATS.SHORTDAY[counter], isOn]);
-      }
+      tx.executeSql('INSERT INTO DAY (day, isOn) VALUES (?,?)', [$locale.DATETIME_FORMATS.SHORTDAY[1].toString().toLowerCase(), settingsWeekdayList[0].checked]);
+      tx.executeSql('INSERT INTO DAY (day, isOn) VALUES (?,?)', [$locale.DATETIME_FORMATS.SHORTDAY[2].toString().toLowerCase(), settingsWeekdayList[1].checked]);
+      tx.executeSql('INSERT INTO DAY (day, isOn) VALUES (?,?)', [$locale.DATETIME_FORMATS.SHORTDAY[3].toString().toLowerCase(), settingsWeekdayList[2].checked]);
+      tx.executeSql('INSERT INTO DAY (day, isOn) VALUES (?,?)', [$locale.DATETIME_FORMATS.SHORTDAY[4].toString().toLowerCase(), settingsWeekdayList[3].checked]);
+      tx.executeSql('INSERT INTO DAY (day, isOn) VALUES (?,?)', [$locale.DATETIME_FORMATS.SHORTDAY[5].toString().toLowerCase(), settingsWeekdayList[4].checked]);
+
+      tx.executeSql('INSERT INTO DAY (day, isOn) VALUES (?,?)', [$locale.DATETIME_FORMATS.SHORTDAY[0].toString().toLowerCase(), settingsWeekendList[0].checked]);
+      tx.executeSql('INSERT INTO DAY (day, isOn) VALUES (?,?)', [$locale.DATETIME_FORMATS.SHORTDAY[6].toString().toLowerCase(), settingsWeekendList[1].checked]);
+
     });
 
     defer.resolve(true);

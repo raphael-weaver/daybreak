@@ -105,13 +105,13 @@ angular.module('ionic-timepicker', ['ionic', 'ionic-timepicker.templates'])
               scope: scope,
               buttons: [
                 {
-                  text: 'Close',
+                  text: $translate.instant("button.close.text"),
                   onTap: function (e) {
                     scope.callback(undefined);
                   }
                 },
                 {
-                  text: 'Set',
+                  text: $translate.instant("button.set.text"),
                   type: 'button-positive',
                   onTap: function (e) {
                     scope.loadingContent = true;
@@ -148,13 +148,13 @@ angular.module('ionic-timepicker', ['ionic', 'ionic-timepicker.templates'])
               scope: scope,
               buttons: [
                 {
-                  text: 'Close',
+                  text: $translate.instant("button.close.text"),
                   onTap: function (e) {
                     scope.callback(undefined);
                   }
                 },
                 {
-                  text: 'Set',
+                  text: $translate.instant("button.set.text"),
                   type: 'button-positive',
                   onTap: function (e) {
 

@@ -1,15 +1,14 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<widget id="com.ionicframework.gcalarm275190" version="0.0.1" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
-  <name>gcalarm</name>
+<widget id="com.ionicframework.dailybriefing275190" version="0.0.1" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+  <name>DailyBriefing</name>
   <description>
-        GCAlarm.
+     DailyBriefing.
     </description>
   <author email="email@irahtech.com" href="http://irahtech.com/">
       Raphael Weaver
     </author>
   <content src="main.html"/>
   <access origin="*"/>
-  <plugin name="de.appplant.cordova.plugin.local-notification"/>
   <plugin name="cordova-plugin-whitelist" version="1"/>
   <preference name="webviewbounce" value="false"/>
   <preference name="UIWebViewBounce" value="false"/>

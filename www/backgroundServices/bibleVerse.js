@@ -1,5 +1,5 @@
 var FILENAME = "bibleVerse.js:";
-gcalarm.service('bibleVerse',['$http', '$translate', function($http, $translate) {
+gcalarm.service('bibleVerse',['$http', '$translate', 'localization', function($http, $translate, localization) {
   var OBJECTNAME = "bibleVerse:";
 
   var bibleVerse;
@@ -14,25 +14,28 @@ gcalarm.service('bibleVerse',['$http', '$translate', function($http, $translate)
     $.when(bibleVerseData).done(function (data1) {
       if (typeof data1 != "undefined") {
         //TODO change to check for locale
-        if(!isLocaleEnglish()){
-          var bibleVerseLocaleData = callLocaleBibleVerseApi(data1.reference);
-          $.when(bibleVerseLocaleData).done(function (data) {
-            var bibleVerseLocale = {"text":"","reference":""};
-            if (typeof data != "undefined") {
-              console.info(FILENAME + OBJECTNAME + METHODNAME + "bible verse data received successfully");
+        var promise = localization.isLocaleEnglish();
+        promise.then(function (isLocaleEnglish) {
+          if (!isLocaleEnglish) {
+            var bibleVerseLocaleData = callLocaleBibleVerseApi(data1.reference);
+            $.when(bibleVerseLocaleData).done(function (data) {
+              var bibleVerseLocale = {"text": "", "reference": ""};
+              if (typeof data != "undefined") {
+                console.info(FILENAME + OBJECTNAME + METHODNAME + "bible verse data received successfully");
 
-              bibleVerseLocale.text = data;
-              bibleVerseLocale.reference = data1.reference;
+                bibleVerseLocale.text = data;
+                bibleVerseLocale.reference = data1.reference;
 
-              console.debug(FILENAME + OBJECTNAME + METHODNAME + "bible text " + JSON.stringify(bibleVerseLocale));
-              defer.resolve(bibleVerseLocale);
-            }
-          });
-        }
-        else{
-          console.debug(FILENAME + OBJECTNAME + METHODNAME + JSON.stringify(bibleVerse));
-          defer.resolve(bibleVerse);
-        }
+                console.debug(FILENAME + OBJECTNAME + METHODNAME + "bible text " + JSON.stringify(bibleVerseLocale));
+                defer.resolve(bibleVerseLocale);
+              }
+            });
+          }
+          else {
+            console.debug(FILENAME + OBJECTNAME + METHODNAME + JSON.stringify(bibleVerse));
+            defer.resolve(bibleVerse);
+          }
+        });
       }
     });
     return defer.promise();
@@ -54,8 +57,9 @@ gcalarm.service('bibleVerse',['$http', '$translate', function($http, $translate)
     });
     http.then(function (data) {
       bibleVerse = data.data.verse.details;
+
       //TODO change to check for locale
-      if(isLocaleEnglish()){
+      if(localization.isLocaleEnglish()){
         bibleVerse.reference = bibleVerse.reference.replace(":", " ").replace("-", " ");
         console.debug(FILENAME + OBJECTNAME + METHODNAME + "bible object " + JSON.stringify(bibleVerse));
       }
@@ -80,7 +84,7 @@ gcalarm.service('bibleVerse',['$http', '$translate', function($http, $translate)
       jsonp: 'getbible',
       params: {
         passage:bibleVerseReference,
-        translation:$translate("bibleTranslation")
+        translation:$translate.instant("bibleTranslation")
       }
     });
     http.then(function (data) {

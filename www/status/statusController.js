@@ -3,37 +3,41 @@ gcalarm.controller('statusController', ['$scope', '$rootScope', 'statusService',
   var OBJECTNAME = "statusController:";
 
   statusService.setExistingBackgroundImage();
-
   var notificationSet = "";
   $ionicPlatform.ready(function() {
     console.info(FILENAME + OBJECTNAME + "ionic platform is ready");
 
-    var notificationTime = statusService.getNotificationTime();
+    var notificationTime = statusService.getWeekdayNotificationTime();
     $.when(notificationTime).done(function(data) {
       console.debug(FILENAME + OBJECTNAME + "notificationTime=" + JSON.stringify(data));
 
-      notificationSet = data;
+      weekdayNotification = data;
       $scope.weekdayTimePickerObject = {
-        etime: data.weekdayNotification,//Optional
-        step: 05,  //Optional
+        etime: weekdayNotification,//Optional
+        step: 01,  //Optional
         format: 12,  //Optional
         titleLabel: '12-hour Format',  //Optional
-        setLabel: $translate("set"),  //Optional
-        closeLabel: $translate("close"),  //Optional
+        setLabel: $translate.instant("button.set.text"),  //Optional
+        closeLabel: $translate.instant("button.close.text"),  //Optional
         setButtonType: 'button-positive',  //Optional
         closeButtonType: 'button-stable',  //Optional
         callback: function (val) {    //Mandatory
           weekdayTimePickerCallback(val);
         }
       };
+    });
+    var notificationTime = statusService.getWeekendNotificationTime();
+    $.when(notificationTime).done(function(data) {
+      console.debug(FILENAME + OBJECTNAME + "notificationTime=" + JSON.stringify(data));
 
+      weekendNotification = data;
       $scope.weekendTimePickerObject = {
-        etime: data.weekendNotification,//Optional
-        step: 05,  //Optional
+        etime: weekendNotification,//Optional
+        step: 01,  //Optional
         format: 12,  //Optional
         titleLabel: '12-hour Format',  //Optional
-        setLabel: $translate("set"),  //Optional
-        closeLabel: $translate("close"),  //Optional
+        setLabel: $translate.instant("button.set.text"),  //Optional
+        closeLabel: $translate.instant("button.close.text"),  //Optional
         setButtonType: 'button-positive',  //Optional
         closeButtonType: 'button-stable',  //Optional
         callback: function (val) {    //Mandatory

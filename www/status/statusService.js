@@ -1,17 +1,18 @@
 var FILENAME = "statusService.js:";
+var FILENAME = "statusService.js:";
 gcalarm.service('statusService', ['$cordovaCamera', '$localStorage', '$translate', function($cordovaCamera, $localStorage, $translate) {
   var OBJECTNAME = "statusService:";
 
   var gcalarmdb = window.openDatabase('gcalarm', '1.0', 'GCAlarm DB', 2 * 1024 * 1024);
 
-  this.getNotificationTime = function () {
-    var METHODNAME = "getNotificationTime:";
+  this.getWeekdayNotificationTime = function () {
+    var METHODNAME = "getWeekdayNotificationTime:";
     console.info(FILENAME + OBJECTNAME + METHODNAME);
 
     var defer = $.Deferred();
 
-    var notificationTime = {"weekdayNotification":new Date().getHours()*60*60,"weekendNotification":new Date().getHours()*60*60};
-    console.info(FILENAME + OBJECTNAME + METHODNAME + "notificationTime=" + notificationTime);
+    var weekdayNotification = new Date().getHours()*60*60;
+    console.info(FILENAME + OBJECTNAME + METHODNAME + "weekdayNotification=" + weekdayNotification);
 
     gcalarmdb.transaction(function (tx) {
       tx.executeSql('CREATE TABLE IF NOT EXISTS NOTIFICATIONTIME (notificationType TEXT, notificationName TEXT, notificationTime INTEGER)');
@@ -19,21 +20,12 @@ gcalarm.service('statusService', ['$cordovaCamera', '$localStorage', '$translate
         console.debug(FILENAME + OBJECTNAME + METHODNAME + "notification weekday from db" + resultSet.rows.length);
 
         if(resultSet.rows.length > 0) {
-          notificationTime.weekdayNotification = resultSet.rows.item(0).notificationTime;
+          weekdayNotification = resultSet.rows.item(0).notificationTime;
         }
+        defer.resolve(weekdayNotification);
       }, function (tx, error) {
         console.log('SELECT error: ' + error.message);
       });
-      tx.executeSql("SELECT * FROM NOTIFICATIONTIME WHERE notificationType = ?", ["WEEKEND"], function (tx, resultSet) {
-        console.debug(FILENAME + OBJECTNAME + METHODNAME + "notification weekend from db" + resultSet.rows.length);
-
-        if(resultSet.rows.length > 0) {
-          notificationTime.weekendNotification = resultSet.rows.item(0).notificationTime;
-        }
-      }, function (tx, error) {
-        console.error(FILENAME + OBJECTNAME + METHODNAME + 'SELECT error: ' + error.message);
-      });
-      defer.resolve(notificationTime);
     }, function (error) {
       console.error(FILENAME + OBJECTNAME + METHODNAME + 'transaction error: ' + error.message);
     }, function () {
@@ -41,6 +33,36 @@ gcalarm.service('statusService', ['$cordovaCamera', '$localStorage', '$translate
     });
     return defer.promise();
   };
+
+  this.getWeekendNotificationTime = function () {
+    var METHODNAME = "getWeekendNotificationTime:";
+    console.info(FILENAME + OBJECTNAME + METHODNAME);
+
+    var defer = $.Deferred();
+
+    var weekendNotification = new Date().getHours()*60*60;
+    console.info(FILENAME + OBJECTNAME + METHODNAME + "weekendNotification=" + weekendNotification);
+
+    gcalarmdb.transaction(function (tx) {
+      tx.executeSql('CREATE TABLE IF NOT EXISTS NOTIFICATIONTIME (notificationType TEXT, notificationName TEXT, notificationTime INTEGER)');
+      tx.executeSql("SELECT * FROM NOTIFICATIONTIME WHERE notificationType = ?", ["WEEKEND"], function (tx, resultSet) {
+        console.debug(FILENAME + OBJECTNAME + METHODNAME + "notification weekend from db" + resultSet.rows.length);
+
+        if(resultSet.rows.length > 0) {
+          weekendNotification = resultSet.rows.item(0).notificationTime;
+        }
+        defer.resolve(weekendNotification);
+      }, function (tx, error) {
+        console.error(FILENAME + OBJECTNAME + METHODNAME + 'SELECT error: ' + error.message);
+      });
+    }, function (error) {
+      console.error(FILENAME + OBJECTNAME + METHODNAME + 'transaction error: ' + error.message);
+    }, function () {
+      console.info(FILENAME + OBJECTNAME + METHODNAME + 'transaction ok');
+    });
+    return defer.promise();
+  };
+
   this.saveWeekdayNotificationTime = function (notificationTime) {
     var METHODNAME = "saveWeekdayNotificationTime:";
     console.info(FILENAME + OBJECTNAME + METHODNAME);
@@ -75,7 +97,6 @@ gcalarm.service('statusService', ['$cordovaCamera', '$localStorage', '$translate
 
     return defer.promise();
   };
-
 
   this.setBackgroundImage = function () {
     var METHODNAME = "setBackgroundImage:";

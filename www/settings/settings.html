@@ -1,4 +1,4 @@
-<ion-view view-title="Setting">
+<ion-view>
   <ion-content>
     <div ng-controller="notificationController">
     </div>
@@ -14,7 +14,8 @@
         <div class="settingFeatureToggles">
           <ion-toggle toggle-balanced ng-repeat="feature in settingsWeekdayFeaturesList"
                       ng-model="feature.checked"
-                      ng-checked="feature.checked">
+                      ng-checked="feature.checked"
+                      ng-click="checkFeatureRequirement(feature)">
             {{ feature.text }}
           </ion-toggle>
         </div>
@@ -41,7 +42,8 @@
         <div class="settingFeatureToggles">
           <ion-toggle toggle-balanced ng-repeat="feature in settingsWeekendFeaturesList"
                       ng-model="feature.checked"
-                      ng-checked="feature.checked">
+                      ng-checked="feature.checked"
+                      ng-click="checkFeatureRequirement(feature)">
             {{ feature.text }}
           </ion-toggle>
         </div>
@@ -52,7 +54,7 @@
         </div>
         <div class="horoscopeSignSelect">
           <p>
-            <button class="button button-block button-light" ng-click="openSelectHoroscopeSignPopover($event)" translate="horoscopeSign"></button>
+            <button class="button button-block button-light" ng-click="openPopover($event)" translate="horoscopeSign"></button>
           </p>
         </div>
         <button class="saveLocation button button-block button-positive" ng-click="saveSettings()" translate="button.save.text"></button>

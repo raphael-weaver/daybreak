@@ -5,8 +5,28 @@
 // the 2nd parameter is an array of 'requires'
 // 'starter.controllers' is found in controllers.js
 var gcalarm = angular.module('gcalarm', ['ionic', 'ionic-timepicker', 'standard-time-meridian', 'ion-place-tools', 'ngCordovaOauth', 'ngStorage', 'ngCordova', 'tmh.dynamicLocale', 'pascalprecht.translate', 'ionic.closePopup'])
-  .run(function ($rootScope, $ionicPlatform, $timeout) {
+
+   ///Languages implemented within application
+  .constant('Constants', {
+    availableLanguages:{
+      0:'en-US',
+      1:'es-es',
+      2:'fr-fr',
+      3:'ja-jp',
+      4:'ms-latn',
+      5:'pt-pt',
+      6:'ru-ru',
+      7:'zh-cn',
+      8:'de-de',
+      9:'ar-001'
+    },
+    defaultLanguage:'en-US'
+  }
+  )
+  .run(function ($rootScope, $ionicPlatform, tmhDynamicLocale, Constants) {
+
     $ionicPlatform.ready(function () {
+      tmhDynamicLocale.set(Constants.defaultLanguage);
       // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
       // for form inputs)
       if (window.cordova && window.cordova.plugins.Keyboard) {
@@ -20,16 +40,13 @@ var gcalarm = angular.module('gcalarm', ['ionic', 'ionic-timepicker', 'standard-
 
     });
   })
-  ///Languages implemented within application
-  .constant('availableLanguages', ['en-US', 'fr-fr'])
-  .constant('defaultLanguage', 'en-US')
-  .config(function (tmhDynamicLocaleProvider, $translateProvider, defaultLanguage) {
-    tmhDynamicLocaleProvider.localeLocationPattern('../locales/angular-locale_{{locale}}.js');
-     $translateProvider.useStaticFilesLoader({
+  .config(function (tmhDynamicLocaleProvider, $translateProvider, Constants) {
+    tmhDynamicLocaleProvider.localeLocationPattern('locales/angular-locale_{{locale}}.js');
+    $translateProvider.useStaticFilesLoader({
        'prefix': 'i18n/',
        'suffix': '.json'
      });
-    $translateProvider.preferredLanguage(defaultLanguage);
+    $translateProvider.preferredLanguage(Constants.defaultLanguage);
   })
   .config(function ($stateProvider, $urlRouterProvider, $ionicConfigProvider) {
     $ionicConfigProvider.tabs.position('top');

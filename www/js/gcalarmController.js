@@ -2,6 +2,8 @@ var FILENAME = "gcalarmController.js:";
 gcalarm.controller('gcalarmController', ['$scope', '$rootScope', '$localStorage', '$ionicModal', '$timeout', '$ionicPopup', '$ionicPopover', '$ionicPlatform', '$cordovaCamera', '$translate', 'statusService', function ($scope, $rootScope, $localStorage, $ionicModal, $timeout, $ionicPopup, $ionicPopover, $ionicPlatform, $cordovaCamera, $translate, statusService) {
   var OBJECTNAME = "gcalarmController:";
 
+  statusService.setExistingBackgroundImage();
+
   console.info(FILENAME + OBJECTNAME + "calling popoverMainSettings");
   popoverMainSettings();
 
@@ -15,27 +17,25 @@ gcalarm.controller('gcalarmController', ['$scope', '$rootScope', '$localStorage'
 
   console.info(FILENAME + OBJECTNAME + "get background image if exist");
 
-  statusService.setExistingBackgroundImage();
-
   $scope.setName = function () {
     var METHODNAME = "setName:";
 
     console.info(FILENAME + OBJECTNAME + METHODNAME);
 
     var setNamePopup = $ionicPopup.show({
-      template: '<input type="text" style="height:40px;font-size:14pt;" class="namePopupText" ng-value="name" placeholder="{{name}}">',
+      template: '<input type="text" style="height:40px;font-size:14pt;" class="namePopupText" placeholder="{{name}}">',
       scope: $scope,
       cssClass: 'setNamePopup',
       buttons: [
         {
-          text: '<b>Save</b>',
+          text: '<b>' + $translate.instant("button.save.text") + '</b>',
           type: 'button-positive',
           onTap: function (e) {
             $scope.name = $(".namePopupText").val();
             $localStorage["name"] = $scope.name;
           }
         }, {
-          text: 'Cancel'
+          text: $translate.instant("button.cancel.text")
         },]
     });
 

@@ -1,4 +1,6 @@
 var FILENAME = "utility.js:";
+
+var ACTIVENOTIFICATIONID = 0;
 String.prototype.bool = function() {
   var METHODNAME = "String.bool:";
   console.info(FILENAME + METHODNAME);

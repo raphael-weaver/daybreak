@@ -12,14 +12,13 @@ gcalarm.service('translator',['$http', '$translate', function($http, $translate)
     var defer = $.Deferred();
 
     var key = 'trnsl.1.1.20160813T120024Z.cc0ff5387971c002.4980c9eec95af21b8373d6f38d9a2c3c14821b36';
-
     var http = $http({
       url: 'https://translate.yandex.net/api/v1.5/tr.json/translate',
       method: 'GET',
       params: {
         key: key,
         text: text,
-        lang: $translate("locale.translator")
+        lang: $translate.instant("locale.translator")
       }
     });
     http.then(function (data) {

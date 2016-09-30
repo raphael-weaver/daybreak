@@ -1,5 +1,5 @@
 var FILENAME = "horoscope.js:";
-gcalarm.service('horoscope', ['$http', '$translate', 'translator', function($http, $translate, translator) {
+gcalarm.service('horoscope', ['$http', '$translate', 'translator', 'localization', function($http, $translate, translator, localization) {
   var OBJECTNAME = "horoscope:";
 
   var dailyHoroscope = "";
@@ -16,24 +16,26 @@ gcalarm.service('horoscope', ['$http', '$translate', 'translator', function($htt
     $.when(horoscope).done(function(data) {
       if(typeof data != "undefined"){
         dailyHoroscope = data;
-        if(!isLocaleEnglish()){
-          console.info(FILENAME + OBJECTNAME + METHODNAME + "calling translator to translate horoscope");
-          var translation = translator.getTranslation(dailyHoroscope);
-          $.when(translation).done(function(data) {
-            if(typeof data != "undefined"){
-              dailyHoroscope = data;
+        var promise = localization.isLocaleEnglish();
+        promise.then(function (isLocaleEnglish) {
+          if (!isLocaleEnglish) {
+            console.info(FILENAME + OBJECTNAME + METHODNAME + "calling translator to translate horoscope");
+            var translation = translator.getTranslation(dailyHoroscope);
+            $.when(translation).done(function (data) {
+              if (typeof data != "undefined") {
+                dailyHoroscope = data;
 
-              console.debug(FILENAME + OBJECTNAME + METHODNAME + data);
-              console.info(FILENAME + OBJECTNAME + METHODNAME + "horoscope retrieved successfully");
+                console.debug(FILENAME + OBJECTNAME + METHODNAME + data);
+                console.info(FILENAME + OBJECTNAME + METHODNAME + "horoscope retrieved successfully");
 
-              defer.resolve(dailyHoroscope);
-            }
-          });
-        }
-        else{
-          defer.resolve(dailyHoroscope);
-        }
-
+                defer.resolve(dailyHoroscope);
+              }
+            });
+          }
+          else {
+            defer.resolve(dailyHoroscope);
+          }
+        });
       }
     });
 

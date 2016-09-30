@@ -88,11 +88,12 @@ gcalarm.service('googleEvent',['$http', '$translate', 'googleLoginService', func
           key: googleData.apiKey,
           timeMin:timeRange.minDateTime,
           timeMax:timeRange.maxDateTime,
-          language:$translate("locale.googleApi")
+          language:$translate.instant("locale.googleApi")
         }
       });
       http.then(function (data) {
         var eventListData = data.data.items;
+
         console.debug(FILENAME + OBJECTNAME + METHODNAME + " event data " + JSON.stringify(eventListData));
         defer.resolve(eventListData);
       }, function errorCallback(errorResponse) {

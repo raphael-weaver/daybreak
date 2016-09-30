@@ -15,7 +15,7 @@ gcalarm.service('quote',['$http', '$translate', function($http, $translate) {
      params: {
         method: "getQuote",
         format: "json",
-        lang:$translate("locale.quote")
+        lang:$translate.instant("locale.quote")
      }
      });
      http.then(function (data) {

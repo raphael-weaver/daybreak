@@ -1,6 +1,6 @@
 var FILENAME = "startController.js:";
 
-gcalarm.controller('startController', ['$scope', 'startService', 'settingsService', 'statusService', '$ionicPlatform', 'IonicClosePopupService', '$translate', '$ionicPopup', '$ionicPopover', '$cordovaLocalNotification', '$locale', '$localStorage', '$ionicPlatform', function ($scope, startService, settingsService, statusService, $ionicPlatform, IonicClosePopupService, $translate, $ionicPopup, $cordovaLocalNotification, $localStorage, $locale) {
+gcalarm.controller('startController', ['$scope', 'startService', 'settingsService', 'statusService', 'textToSpeech', 'localization', '$ionicPlatform', 'IonicClosePopupService', '$translate', '$ionicPopup', '$ionicPopover', '$cordovaLocalNotification', '$locale', '$localStorage', '$ionicPlatform', function ($scope, startService, settingsService, statusService, textToSpeech, localization, $ionicPlatform, IonicClosePopupService, $translate, $ionicPopup, $cordovaLocalNotification, $localStorage, $locale) {
   var OBJECTNAME = "startController:";
 
   $ionicPlatform.ready(function () {
@@ -15,7 +15,7 @@ gcalarm.controller('startController', ['$scope', 'startService', 'settingsServic
         scope: $scope,
         cssClass: 'activeAlarmOptionsPopup',
         buttons: [{
-          text: '<b>Snooze</b>',
+          text: '<b>' + $translate.instant("button.snooze.text") + '</b>',
           type: 'button-positive',
           onTap: function (e) {
             console.info(FILENAME + OBJECTNAME + METHODNAME + "snooze button click");
@@ -24,7 +24,7 @@ gcalarm.controller('startController', ['$scope', 'startService', 'settingsServic
             activeAlarmOptionsPopup.close();
           }
         }, {
-          text: '<b>Stop</b>',
+          text: '<b>' + $translate.instant("button.stop.text") + '</b>',
           type: 'button-light',
           onTap: function (e) {
             console.info(FILENAME + OBJECTNAME + METHODNAME + "stop button click");
@@ -40,6 +40,7 @@ gcalarm.controller('startController', ['$scope', 'startService', 'settingsServic
         var METHODNAME = "runSnoozeActions:";
         console.info(FILENAME + OBJECTNAME + METHODNAME);
 
+        textToSpeech.playBlankText();
         var nextSnoozeTime = new Date(Date.now());
         nextSnoozeTime.setMinutes(nextSnoozeTime.getMinutes() + 15);
 
@@ -49,12 +50,7 @@ gcalarm.controller('startController', ['$scope', 'startService', 'settingsServic
         }
 
         console.info(FILENAME + OBJECTNAME + METHODNAME + "start clear triggered alarms");
-        cordova.plugins.notification.local.getTriggeredIds(function (triggeredIds) {
-          console.debug(FILENAME + OBJECTNAME + METHODNAME + "triggeredIds=" + JSON.stringify(triggeredIds));
 
-          cordova.plugins.notification.local.clear(triggeredIds, function () {
-          });
-        });
         console.info(FILENAME + OBJECTNAME + METHODNAME + "end clear triggered alarms");
 
         var otherSettingsBuzzWeekdayData = settingsService.getOtherSettingsBuzzWeekday();
@@ -70,17 +66,25 @@ gcalarm.controller('startController', ['$scope', 'startService', 'settingsServic
               buzzSettings = otherSettingsBuzzWeekend;
             }
             console.info(FILENAME + OBJECTNAME + METHODNAME + "start add snooze notification");
+
+            cordova.plugins.notification.local.cancelAll(function() {
+            }, this);
+
             var notificationId = (Math.floor(Math.random() * 1000000));
-            $cordovaLocalNotification.add({
-              id: notificationId,
+            cordova.plugins.notification.local.update({
+              id: ACTIVENOTIFICATIONID,
+              firstAt: nextSnoozeTime
+            });
+/*            $cordovaLocalNotification.add({
+              id: ACTIVENOTIFICATIONID,
               firstAt: nextSnoozeTime,
-              message: "Hello " + name,
-              title: "Your Daily Briefing....",
+              message: $translate.instant("hello") + name,
+              title: $translate.instant("daybreak.notification.text"),
               every: "minute",
               sound: buzzSettings ? 'file://audio/loudBuzzer.mp3' : ''
             }).then(function () {
               console.info(FILENAME + OBJECTNAME + METHODNAME + "cordovaLocalNotifications set");
-            });
+            });*/
 
             navigator.plugins.alarm.cancel(
               function (response) {
@@ -107,36 +111,33 @@ gcalarm.controller('startController', ['$scope', 'startService', 'settingsServic
       function runStopActions() {
         var METHODNAME = "runStopActions:";
         console.info(FILENAME + OBJECTNAME + METHODNAME);
-
         console.info(FILENAME + OBJECTNAME + METHODNAME + "start clear triggered alarms");
-        cordova.plugins.notification.local.getTriggeredIds(function (triggeredIds) {
-          console.debug(FILENAME + OBJECTNAME + METHODNAME + "triggeredIds=" + JSON.stringify(triggeredIds));
 
-          cordova.plugins.notification.local.clear(triggeredIds, function () {
-          });
-        });
+        textToSpeech.playBlankText();
+        cordova.plugins.notification.local.cancelAll(function() {
+        }, this);
+
         console.info(FILENAME + OBJECTNAME + METHODNAME + "end clear triggered alarms");
-      }
-
-      function isWeekday(days) {
-        var METHODNAME = "isWeekday:";
-        console.info(FILENAME + OBJECTNAME + METHODNAME);
-
-        var weekdayList = [$locale.DATETIME_FORMATS.SHORTDAY[1].toString().toLowerCase(), $locale.DATETIME_FORMATS.SHORTDAY[2].toString().toLowerCase(), $locale.DATETIME_FORMATS.SHORTDAY[3].toString().toLowerCase(), $locale.DATETIME_FORMATS.SHORTDAY[4].toString().toLowerCase(), $locale.DATETIME_FORMATS.SHORTDAY[5].toString().toLowerCase()];
-
-        return ($.inArray(days.text, weekdayList)) > -1;
-      }
-
-      function isWeekend(days) {
-        var METHODNAME = "isWeekend:";
-        console.info(FILENAME + OBJECTNAME + METHODNAME);
-
-        var weekendList = [$locale.DATETIME_FORMATS.SHORTDAY[6].toString().toLowerCase(), $locale.DATETIME_FORMATS.SHORTDAY[0].toString().toLowerCase()];
-        return ($.inArray(days.text, weekendList)) > -1;
       }
 
       console.debug(FILENAME + OBJECTNAME + METHODNAME + +"popup creation text=" + setNamePopup);
       $scope.popover.hide();
     };
   });
+  function isWeekday(days) {
+    var METHODNAME = "isWeekday:";
+    console.info(FILENAME + OBJECTNAME + METHODNAME);
+
+    var weekdayList = [$locale.DATETIME_FORMATS.SHORTDAY[1].toString().toLowerCase(), $locale.DATETIME_FORMATS.SHORTDAY[2].toString().toLowerCase(), $locale.DATETIME_FORMATS.SHORTDAY[3].toString().toLowerCase(), $locale.DATETIME_FORMATS.SHORTDAY[4].toString().toLowerCase(), $locale.DATETIME_FORMATS.SHORTDAY[5].toString().toLowerCase()];
+
+    return ($.inArray(days.text, weekdayList)) > -1;
+  }
+
+  function isWeekend(days) {
+    var METHODNAME = "isWeekend:";
+    console.info(FILENAME + OBJECTNAME + METHODNAME);
+
+    var weekendList = [$locale.DATETIME_FORMATS.SHORTDAY[6].toString().toLowerCase(), $locale.DATETIME_FORMATS.SHORTDAY[0].toString().toLowerCase()];
+    return ($.inArray(days.text, weekendList)) > -1;
+  }
 }]);
