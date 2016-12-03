@@ -45,7 +45,6 @@ gcalarm.service('googleMap', ['$http', '$translate', 'locationService', 'googleL
 
         location.home = data;
 
-
         var workLocation = locationService.getWorkLocation();
         $.when(workLocation).done(function (data) {
           if (typeof data != "undefined") {

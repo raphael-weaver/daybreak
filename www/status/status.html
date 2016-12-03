@@ -1,28 +1,25 @@
 <ion-view>
   <ion-content>
-    <div ng-controller="notificationController">
+    <div ng-controller="notificationController"/>
+    <div class="centerStatusButton">
+      <ionic-timepicker class="weekdayNotificationPosition" etime="weekdayTimePickerObject.etime"
+                        format="weekdayTimePickerObject.format" step="weekdayTimePickerObject.step"
+                        callback="weekdayTimePickerObject.callback">
+        <button class="button button-full button-positive medium_button">
+          {{ 'weekday' | translate }}
+          <standard-time-meridian etime='weekdayTimePickerObject.etime'>
+          </standard-time-meridian>
+        </button>
+      </ionic-timepicker>
+      <ionic-timepicker class="weekendNotificationPosition" etime="weekendTimePickerObject.etime"
+                        format="weekendTimePickerObject.format" step="weekendTimePickerObject.step"
+                        callback="weekendTimePickerObject.callback">
+        <button class="button button-full button-positive medium_button">
+          {{ 'weekend' | translate }}
+          <standard-time-meridian etime='weekendTimePickerObject.etime'>
+          </standard-time-meridian>
+        </button>
+      </ionic-timepicker>
     </div>
-    <ion-view>
-      <div class="centerStatusButton">
-        <ionic-timepicker class="weekdayNotificationPosition" etime="weekdayTimePickerObject.etime"
-                          format="weekdayTimePickerObject.format" step="weekdayTimePickerObject.step"
-                          callback="weekdayTimePickerObject.callback">
-          <button class="button button-block button-positive medium_button">
-            {{ 'weekday' | translate }}
-            <standard-time-meridian etime='weekdayTimePickerObject.etime'>
-            </standard-time-meridian>
-          </button>
-        </ionic-timepicker>
-        <ionic-timepicker class="weekendNotificationPosition" etime="weekendTimePickerObject.etime"
-                          format="weekendTimePickerObject.format" step="weekendTimePickerObject.step"
-                          callback="weekendTimePickerObject.callback">
-          <button class="button button-block button-positive medium_button">
-            {{ 'weekend' | translate }}
-            <standard-time-meridian etime='weekendTimePickerObject.etime'>
-            </standard-time-meridian>
-          </button>
-        </ionic-timepicker>
-      </div>
-    </ion-view>
   </ion-content>
 </ion-view>

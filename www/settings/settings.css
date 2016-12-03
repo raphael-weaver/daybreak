@@ -12,19 +12,43 @@
   left: 50%;
   width: 50%;
 }
+.settingFeatureTogglesGoogleOn {
+
+}
+.settingFeatureTogglesGoogleOff {
+  opacity: 0.5;
+}
+.googleOffColor {
+  color: #0c5317;
+}
+.settingFeatureTogglesHoroBiblInspOn {
+
+}
+.settingFeatureTogglesHoroBiblInspOff {
+  opacity: 0.5;
+}
+.horoBiblInspOffColor {
+  color: #6b46e5;
+}
 .buzzToggle {
   position: absolute;
   left: 0%;
-  top: 70%;
+  top: 82%;
   width: 50%;
 }
 .horoscopeSignSelect {
   position: absolute;
   left: 50%;
-  top: 68%;
+  top: 80%;
   width: 50%;
 }
-.saveLocation {
+.googleFeatures {
+  width: 100%;
+}
+.horoBiblInspFeatures {
+  width: 100%;
+}
+.saveSettings {
   position: absolute;
   top: 90%;
 }
@@ -48,4 +72,8 @@ ion-popover-view.fitSelectHoroscopeSign ion-content {
 }
 .platform-ios ion-popover-view.fitSelectHoroscopeSign .item:last-child {
   border-radius: 0 0 10px 10px;
+}
+
+.no-padding {
+  padding: 0px !important;
 }

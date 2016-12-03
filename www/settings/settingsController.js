@@ -1,10 +1,27 @@
 var FILENAME = "settingsController.js:";
-gcalarm.controller('settingsController', ['$scope', '$rootScope', '$ionicPlatform', '$ionicPopover', 'settingsService', 'statusService', 'textToSpeech', 'locationService', 'googleLoginService', '$ionicModal', '$timeout', '$ionicPopup', '$translate', function ($scope, $rootScope, $ionicPlatform, $ionicPopover, settingsService, statusService, textToSpeech, locationService, googleLoginService, $ionicModal, $timeout, $ionicPopup, $translate) {
+gcalarm.controller('settingsController', ['$scope', '$rootScope', '$localStorage', '$ionicPlatform', '$ionicPopover', 'settingsService', 'statusService', 'textToSpeech', 'locationService', 'googleLoginService', '$ionicModal', '$timeout', '$ionicPopup', '$translate', 'Constants', function ($scope, $rootScope, $localStorage, $ionicPlatform, $ionicPopover, settingsService, statusService, textToSpeech, locationService, googleLoginService, $ionicModal, $timeout, $ionicPopup, $translate, Constants) {
   var OBJECTNAME = "settingsController:";
 
-  var returnValue = statusService.setExistingBackgroundImage();
-  $.when(returnValue).done(function (data) {
-  });
+  setupFeatures();
+
+  function setupFeatures() {
+
+    $scope.weatherFeatures = [$translate.instant("feature.weather")];
+    $scope.weatherFeaturesFilter = function(item) {
+      return ($scope.weatherFeatures.indexOf(item.text) !== -1);
+    };
+
+    $scope.googleFeatures = [$translate.instant("feature.googleTasks"), $translate.instant("feature.commuteTime")];
+    $scope.googleFeaturesFilter = function(item) {
+      return ($scope.googleFeatures.indexOf(item.text) !== -1);
+    };
+
+    $scope.horoBiblInspFeatures = [$translate.instant("feature.horoscope"), $translate.instant("feature.inspirationalQuote"), $translate.instant("feature.bibleVerse")];
+    $scope.horoBiblInspFeaturesFilter = function(item) {
+      return ($scope.horoBiblInspFeatures.indexOf(item.text) !== -1);
+    };
+
+  };
 
   $ionicPlatform.ready(function () {
       console.info(FILENAME + OBJECTNAME + "ionic platform is ready");
@@ -15,8 +32,8 @@ gcalarm.controller('settingsController', ['$scope', '$rootScope', '$ionicPlatfor
         var METHODNAME = "setHoroscopeSign:";
         console.info(FILENAME + OBJECTNAME + METHODNAME);
 
-        $scope.horoscopeSelected = horoscopeItem.sign;
-        $scope.popover.hide();
+        $scope.closePopover();
+        $localStorage["horoscopeSelected"] = horoscopeItem.sign;
       }
 
       $scope.checkFeatureRequirement = function (feature) {
@@ -28,6 +45,15 @@ gcalarm.controller('settingsController', ['$scope', '$rootScope', '$ionicPlatfor
         }
         else if (feature.checked && feature.text == $translate.instant("feature.commuteTime")) {
           checkCommuteRequirement(feature);
+        }
+        else if (feature.checked && feature.text == $translate.instant("feature.horoscope")) {
+          checkHoroscopeRequirement(feature);
+        }
+        else if (feature.checked && feature.text == $translate.instant("feature.inspirationalQuote")) {
+          checkInspirationalQuoteRequirement(feature);
+        }
+        else if (feature.checked && feature.text == $translate.instant("feature.bibleVerse")) {
+          checkBibleVerseRequirement(feature);
         }
       }
 
@@ -101,11 +127,19 @@ gcalarm.controller('settingsController', ['$scope', '$rootScope', '$ionicPlatfor
         $.when(dataFillerSaveDays).done(function (fillerSaveDays) {
           var dataFillerSaveFeatures = settingsService.saveFeatures($scope.settingsWeekdayFeaturesList, $scope.settingsWeekendFeaturesList);
           $.when(dataFillerSaveFeatures).done(function (fillerSaveFeatures) {
-            var dataFillerSaveOtherSettings = settingsService.saveOtherSettings($scope.buzzSetting, $scope.horoscopeList, $scope.horoscopeSelected);
+            var horoscopeSelected = "";
+            if ($localStorage["horoscopeSelected"]) {
+              horoscopeSelected = $localStorage["horoscopeSelected"];
+            }
+            var dataFillerSaveOtherSettings = settingsService.saveOtherSettings($scope.buzzSetting, $scope.horoscopeList, horoscopeSelected);
             $.when(dataFillerSaveOtherSettings).done(function (saveOtherSettings) {
               console.info(FILENAME + OBJECTNAME + METHODNAME + "ending to save all setting");
 
               console.info(FILENAME + OBJECTNAME + METHODNAME + "broadcast setNotifications");
+
+              $rootScope.$broadcast("notificationPlayManager", {
+                "notificationState": Constants.notificationState.STOP
+              });
               $rootScope.$broadcast("setNotifications");
             });
           });
@@ -144,56 +178,69 @@ gcalarm.controller('settingsController', ['$scope', '$rootScope', '$ionicPlatfor
       function checkGoogleEventsRequirement(feature) {
         var METHODNAME = "checkGoogleEventsRequirement";
 
-        var promise = googleLoginService.checkIfLoggedIn();
-        promise.then(function (data) {
-          var isLoggedIn = JSON.stringify(data).bool();
-          if (!isLoggedIn) {
-            textToSpeech.playText($translate.instant("googleTask.notLoggedIn"));
-            feature.checked = false;
-            $scope.$apply();
-          }
-        }, function (data) {
-          $scope.google_data = data;
+        if (!$rootScope.isGoogleFeaturesPurchased) {
+          textToSpeech.playText($translate.instant('feature.purchase.googleEvents'));
+          feature.checked = false;
+          $scope.$apply();
+        }
+        else {
+          var promise = googleLoginService.checkIfLoggedIn();
+          promise.then(function (data) {
+            var isLoggedIn = JSON.stringify(data).bool();
+            if (!isLoggedIn) {
+              textToSpeech.playText($translate.instant("googleTask.notLoggedIn"));
+              feature.checked = false;
+              $scope.$apply();
+            }
+          }, function (data) {
+            $scope.google_data = data;
 
-          console.error(FILENAME + OBJECTNAME + JSON.stringify(google_data));
-        });
+            console.error(FILENAME + OBJECTNAME + JSON.stringify(google_data));
+          });
+        }
       }
 
       function checkCommuteRequirement(feature) {
         var METHODNAME = "checkCommuteRequirement";
 
-        var location = {"home": "", "work": ""};
-        var homeLocation = locationService.getHomeLocation();
-        $.when(homeLocation).done(function (data) {
-          if (typeof data != "undefined") {
-            location.home = data;
-            console.info(FILENAME + OBJECTNAME + METHODNAME + "home location retrieve was successfully");
-
-          }
-          var workLocation = locationService.getWorkLocation();
-          $.when(workLocation).done(function (data) {
+        if (!$rootScope.isGoogleFeaturesPurchased) {
+          textToSpeech.playText($translate.instant('feature.purchase.commuteTime'));
+          feature.checked = false;
+          $scope.$apply();
+        }
+        else {
+          var location = {"home": "", "work": ""};
+          var homeLocation = locationService.getHomeLocation();
+          $.when(homeLocation).done(function (data) {
             if (typeof data != "undefined") {
-              location.work = data;
-              console.info(FILENAME + OBJECTNAME + METHODNAME + "work location retrieve was successfully");
+              location.home = data;
+              console.info(FILENAME + OBJECTNAME + METHODNAME + "home location retrieve was successfully");
 
             }
-            if ((location.home).isEmpty() && (location.work).isEmpty()) {
-              textToSpeech.playText($translate.instant('location.commuteTime.isEmpty'));
-              feature.checked = false;
-              $scope.$apply();
-            }
-            else if ((location.home).isEmpty()) {
-              textToSpeech.playText($translate.instant('location.home.commuteTime.isEmpty'));
-              feature.checked = false;
-              $scope.$apply();
-            }
-            else if ((location.work).isEmpty()) {
-              textToSpeech.playText($translate.instant('location.work.commuteTime.isEmpty'));
-              feature.checked = false;
-              $scope.$apply();
-            }
+            var workLocation = locationService.getWorkLocation();
+            $.when(workLocation).done(function (data) {
+              if (typeof data != "undefined") {
+                location.work = data;
+                console.info(FILENAME + OBJECTNAME + METHODNAME + "work location retrieve was successfully");
+              }
+              if ((location.home).isEmpty() && (location.work).isEmpty()) {
+                textToSpeech.playText($translate.instant('location.commuteTime.isEmpty'));
+                feature.checked = false;
+                $scope.$apply();
+              }
+              else if ((location.home).isEmpty()) {
+                textToSpeech.playText($translate.instant('location.home.commuteTime.isEmpty'));
+                feature.checked = false;
+                $scope.$apply();
+              }
+              else if ((location.work).isEmpty()) {
+                textToSpeech.playText($translate.instant('location.work.commuteTime.isEmpty'));
+                feature.checked = false;
+                $scope.$apply();
+              }
+            });
           });
-        });
+        }
       }
 
       function checkWeatherRequirement(feature) {
@@ -212,6 +259,43 @@ gcalarm.controller('settingsController', ['$scope', '$rootScope', '$ionicPlatfor
             }
           }
         });
+      }
+
+      function checkHoroscopeRequirement(feature) {
+        var METHODNAME = "checkHoroscopeRequirement";
+
+        if (!$rootScope.isHoroBiblInspFeaturesPurchased) {
+          textToSpeech.playText($translate.instant('feature.purchase.horoscope'));
+          feature.checked = false;
+          $scope.$apply();
+        }
+        else {
+          if (!($localStorage["horoscopeSelected"])) {
+            textToSpeech.playText($translate.instant('horoscope.sign.notSelected'));
+            feature.checked = false;
+            $scope.$apply();
+          }
+        }
+      }
+
+      function checkInspirationalQuoteRequirement(feature) {
+        var METHODNAME = "checkHoroscopeRequirement";
+
+        if (!$rootScope.isHoroBiblInspFeaturesPurchased) {
+          textToSpeech.playText($translate.instant('feature.purchase.inspirationalQuote'));
+          feature.checked = false;
+          $scope.$apply();
+        }
+      }
+
+      function checkBibleVerseRequirement(feature) {
+        var METHODNAME = "checkHoroscopeRequirement";
+
+        if (!$rootScope.isHoroBiblInspFeaturesPurchased) {
+          textToSpeech.playText($translate.instant('feature.purchase.bibleVerse'));
+          feature.checked = false;
+          $scope.$apply();
+        }
       }
     }
   );

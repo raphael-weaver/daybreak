@@ -20,7 +20,13 @@ var gcalarm = angular.module('gcalarm', ['ionic', 'ionic-timepicker', 'standard-
       8:'de-de',
       9:'ar-001'
     },
-    defaultLanguage:'en-US'
+    defaultLanguage:'en-US',
+    notificationState:{
+      STOP: 1,
+      SNOOZE: 3,
+      TRIGGERED: 2,
+      ACTIVE: 4
+    }
   }
   )
   .run(function ($rootScope, $ionicPlatform, tmhDynamicLocale, Constants) {

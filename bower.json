@@ -1,11 +1,13 @@
 {
-  "name": "HelloIonic",
+  "name": "Daybreak",
   "private": "true",
   "devDependencies": {
     "ionic": "driftyco/ionic-bower#1.2.4",
     "angular-translate": "^2.11.1"
   },
   "dependencies": {
-    "ng-cordova-oauth": "^0.2.10"
+    "ng-cordova-oauth": "^0.2.10",
+    "ionic-numberpicker": "^1.1.4",
+    "angular-number-picker": "^2.1.1"
   }
 }

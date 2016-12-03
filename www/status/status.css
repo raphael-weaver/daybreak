@@ -1,12 +1,12 @@
 .weekdayNotificationPosition {
-  position: absolute;
-  top: 5%;
+  position: absolute !important;
+  top: 5% !important;
 }
 .weekendNotificationPosition {
-  position: absolute;
-  top: 45%;
+  position: absolute !important;
+  top: 45% !important;
 }
-.medium_button {
+.medium_button{
   width: 175px !important;
   height: 150px !important;
 }

@@ -68,9 +68,8 @@ gcalarm.service('locationService', ['$translate', function($translate) {
       tx.executeSql('DROP TABLE LOCATION', []);
       tx.executeSql('CREATE TABLE IF NOT EXISTS LOCATION (locationType TEXT, address TEXT, lat INTEGER, long INTEGER)');
     });
-
     var homeCoordinates =  {latitude:"",longitude:""};
-    homeCoordinates =getHomeLatLongCoordinates(location.home);
+    homeCoordinates = getHomeLatLongCoordinates(location.home);
     $.when(homeCoordinates).done(function(data) {
       console.debug(FILENAME + OBJECTNAME + METHODNAME + "insert home location to db");
       gcalarmdb.transaction(function (tx) {
@@ -171,6 +170,23 @@ gcalarm.service('locationService', ['$translate', function($translate) {
           console.info(FILENAME + OBJECTNAME + METHODNAME + "work coordinates successully");
           console.debug(FILENAME + OBJECTNAME + METHODNAME + "work coordinates=" + coordinates);
 
+          defer.resolve(coordinates);
+        }
+        else{
+          if(status == google.maps.GeocoderStatus.INVALID_REQUEST)
+            console.error(FILENAME + OBJECTNAME + METHODNAME + "INVALID_REQUEST");
+          else if(status == google.maps.GeocoderStatus.MAX_ELEMENTS_EXCEEDED){
+            console.error(FILENAME + OBJECTNAME + METHODNAME + "MAX_ELEMENTS_EXCEEDED");
+          }
+          else if(status == google.maps.GeocoderStatus.OVER_QUERY_LIMIT){
+            console.error(FILENAME + OBJECTNAME + METHODNAME + "OVER_QUERY_LIMIT");
+          }
+          else if(status == google.maps.GeocoderStatus.REQUEST_DENIED){
+            console.error(FILENAME + OBJECTNAME + METHODNAME + "REQUEST_DENIED");
+          }
+          else if(status == google.maps.GeocoderStatus.UNKNOWN_ERROR){
+            console.error(FILENAME + OBJECTNAME + METHODNAME + "UNKNOWN_ERROR");
+          }
           defer.resolve(coordinates);
         }
     });

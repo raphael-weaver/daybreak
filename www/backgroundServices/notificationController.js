@@ -1,5 +1,5 @@
 var FILENAME = "notificationController.js:";
-gcalarm.controller('notificationController', ['$scope', '$q', '$rootScope', '$ionicPlatform', '$localStorage', '$cordovaLocalNotification', '$translate', '$locale', 'statusService', 'settingsService', 'googleMap', 'googleEvent', 'weather', 'textToSpeech', 'bibleVerse', 'horoscope', 'quote', 'notificationService', function ($scope, $q, $rootScope, $ionicPlatform, $localStorage, $cordovaLocalNotification, $translate, $locale, statusService, settingsService, googleMap, googleEvent, weather, textToSpeech, bibleVerse, horoscope, quote, notificationService) {
+gcalarm.controller('notificationController', ['$scope', '$q', '$rootScope', '$ionicPlatform', '$localStorage', '$cordovaLocalNotification', '$translate', '$locale', 'statusService', 'settingsService', 'googleMap', 'googleEvent', 'weather', 'textToSpeech', 'bibleVerse', 'horoscope', 'quote', 'notificationService', 'Constants', function ($scope, $q, $rootScope, $ionicPlatform, $localStorage, $cordovaLocalNotification, $translate, $locale, statusService, settingsService, googleMap, googleEvent, weather, textToSpeech, bibleVerse, horoscope, quote, notificationService, Constants) {
   var OBJECTNAME = "notificationController:";
 
   var notifications = [];
@@ -10,6 +10,94 @@ gcalarm.controller('notificationController', ['$scope', '$q', '$rootScope', '$io
     console.info(FILENAME + OBJECTNAME + "setting code for a broadcast of value setNotifications");
     $scope.$on("setNotifications", function () {
       $scope.setNotifications();
+    });
+
+    $scope.$on("notificationPlayManager", function (event, notificationData) {
+      var METHODNAME = "notificationPlayManager:receive";
+      var settingsWeekdayFeaturesList, settingsWeekendFeaturesList, horoscopeList;
+
+      console.info(FILENAME + OBJECTNAME + METHODNAME + "starting get all features");
+
+      var settingsWeekdayFeaturesData = settingsService.getWeekdayFeatureSettings(settingsWeekdayFeaturesList);
+      $.when(settingsWeekdayFeaturesData).done(function (settingsWeekdayFeatures) {
+        var settingsWeekendFeaturesData = settingsService.getWeekendFeatureSettings(settingsWeekendFeaturesList);
+        $.when(settingsWeekendFeaturesData).done(function (settingsWeekendFeatures) {
+          var otherSettingsHoroscopeListData = settingsService.getOtherSettingsHoroscopeList(horoscopeList);
+          $.when(otherSettingsHoroscopeListData).done(function (otherSettingsHoroscopeList) {
+
+            if (notificationData.notificationState === Constants.notificationState.STOP) {//create enuumeration for different state and functionality
+              $localStorage["isStopped"] = true;
+              cordova.plugins.notification.local.clearAll(function () {
+              }, this);
+            }
+            else if (notificationData.notificationState === Constants.notificationState.SNOOZE) {
+
+              var snoozeDelay = settingsService.getSnoozeDelayTime();
+              $.when(snoozeDelay).done(function (snoozeDelayMinutes) {
+                console.debug(FILENAME + OBJECTNAME + "nextSnoozeTime=" + JSON.stringify(snoozeDelayMinutes));
+
+                var snoozeDelayMillSecs = (60000 * snoozeDelayMinutes);
+
+                setTimeout(function () {
+                    $rootScope.$broadcast("notificationPlayManager", {
+                      "notificationState":Constants.notificationState.TRIGGERED
+                    });
+                }, snoozeDelayMillSecs);
+              });
+            }
+            else if (notificationData.notificationState === Constants.notificationState.TRIGGERED) {
+              $localStorage["isStopped"] = false;
+
+              var today = new Date(Date.now());
+              var isWeekdayNotification = isWeekday(today);
+              if (isWeekdayNotification) {
+                var promise = runWeekdayNotifications(settingsWeekdayFeatures, otherSettingsHoroscopeList);
+                promise.then(function (data) {
+                  $rootScope.$broadcast("notificationPlayManager", {
+                    "notificationState":Constants.notificationState.ACTIVE
+                  });
+                });
+              }
+              else {
+                var promise = runWeekendNotifications(settingsWeekendFeatures, otherSettingsHoroscopeList);
+                promise.then(function (data) {
+                  $rootScope.$broadcast("notificationPlayManager", {
+                    "notificationState":Constants.notificationState.ACTIVE
+                  });
+                });
+              }
+            }
+            else if (notificationData.notificationState === Constants.notificationState.ACTIVE) {
+              var oneMinuteInMillSecs = 60000;
+
+              setTimeout(function () {
+                var today = new Date(Date.now());
+                var isWeekdayNotification = isWeekday(today);
+                if (isWeekdayNotification) {
+                  if(!$localStorage["isStopped"]) {
+                    var promise = runWeekdayNotifications(settingsWeekdayFeatures, otherSettingsHoroscopeList);
+                    promise.then(function (data) {
+                      $rootScope.$broadcast("notificationPlayManager", {
+                        "notificationState":Constants.notificationState.ACTIVE
+                      });
+                    });
+                  }
+                }
+                else {
+                  if(!$localStorage["isStopped"]) {
+                    var promise = runWeekendNotifications(settingsWeekendFeatures, otherSettingsHoroscopeList);
+                    promise.then(function (data) {
+                      $rootScope.$broadcast("notificationPlayManager", {
+                        "notificationState":Constants.notificationState.ACTIVE
+                      });
+                    });
+                  }
+                }
+              }, oneMinuteInMillSecs);
+            }
+          });
+        });
+      });
     });
 
     $scope.setNotifications = function () {
@@ -27,7 +115,7 @@ gcalarm.controller('notificationController', ['$scope', '$q', '$rootScope', '$io
           console.error(FILENAME + OBJECTNAME + METHODNAME + "navigator.plugins.alarm.cancel" + JSON.stringify(error));
         }
       );
-      console.info(FILENAME + OBJECTNAME + METHODNAME + "calling $cordovaLocalNotification.cancelAll method");
+      console.info(FILENAME + OBJECTNAME + METHODNAME + "calling $cordovaLocalNotification.clearAll method");
 
       cordova.plugins.notification.local.cancelAll(function() {
       }, this);
@@ -50,7 +138,10 @@ gcalarm.controller('notificationController', ['$scope', '$q', '$rootScope', '$io
               var otherSettingsBuzzWeekendData = settingsService.getOtherSettingsBuzzWeekend();
               $.when(otherSettingsBuzzWeekendData).done(function (otherSettingsBuzzWeekend) {
                 console.info(FILENAME + OBJECTNAME + METHODNAME + "ending to retrieve all data for notification");
-                var dateTime = new Date(weekdayNotificationTime * 1000);
+                var dateTime = new Date(Date.now());
+                var selectedTime = new Date(weekdayNotificationTime * 1000);
+                dateTime.setMinutes(selectedTime.getMinutes());
+                dateTime.setHours(selectedTime.getHours());
 
                 for (var counter = 0; counter < settingsDayList.settingsWeekdayList.length; counter++) {
                   var day = getFullDayName(settingsDayList.settingsWeekdayList[counter].text);
@@ -61,11 +152,10 @@ gcalarm.controller('notificationController', ['$scope', '$q', '$rootScope', '$io
 
                   var isDayOn = settingsDayList.settingsWeekdayList[counter].checked;
                   if (isDayOn) {
-                    var notificationId = (Math.floor(Math.random() * 1000000));
-                    //var _20_sec_from_now = new Date(Date.now() + 10 + 1000);
                     console.info(FILENAME + OBJECTNAME + METHODNAME + "calling $cordovaLocalNotification.add method");
+
                     $cordovaLocalNotification.add({
-                      id: notificationId,
+                      id: day.intValue,
                       firstAt: nextDay,
                       message: $translate.instant("hello") + name,
                       title: $translate.instant("daybreak.notification.text"),
@@ -87,12 +177,9 @@ gcalarm.controller('notificationController', ['$scope', '$q', '$rootScope', '$io
                   var isDayOn = settingsDayList.settingsWeekendList[counter].checked;
                   if (isDayOn) {
 
-                    var notificationId = (Math.floor(Math.random() * 1000000));
-                    //var _20_sec_from_now = new Date(Date.now() + 10 + 1000);
                     console.info(FILENAME + OBJECTNAME + METHODNAME + "calling $cordovaLocalNotification.add method");
-
                     $cordovaLocalNotification.add({
-                      id: notificationId,
+                      id: day.intValue,
                       firstAt: nextDay,
                       message: $translate.instant("hello") + name,
                       title: $translate.instant("daybreak.notification.text"),
@@ -118,176 +205,14 @@ gcalarm.controller('notificationController', ['$scope', '$q', '$rootScope', '$io
         });
       });
       console.info(FILENAME + OBJECTNAME + METHODNAME + "setting code for cordovaLocalNotification:click");
-      $scope.$on("$cordovaLocalNotification:click", function (id, state, json) {
-        var settingsWeekdayFeaturesList, settingsWeekendFeaturesList, horoscopeList;
-        var settingsWeekdayFeaturesData = settingsService.getWeekdayFeatureSettings(settingsWeekdayFeaturesList);
-        console.info(FILENAME + OBJECTNAME + METHODNAME + "starting get all features");
-        $.when(settingsWeekdayFeaturesData).done(function (settingsWeekdayFeatures) {
-          var settingsWeekendFeaturesData = settingsService.getWeekendFeatureSettings(settingsWeekendFeaturesList);
-          $.when(settingsWeekendFeaturesData).done(function (settingsWeekendFeatures) {
-            var otherSettingsHoroscopeListData = settingsService.getOtherSettingsHoroscopeList(horoscopeList);
-            $.when(otherSettingsHoroscopeListData).done(function (otherSettingsHoroscopeList) {
-              var otherSettingsBuzzWeekdayData = settingsService.getOtherSettingsBuzzWeekday();
-              $.when(otherSettingsBuzzWeekdayData).done(function (otherSettingsBuzzWeekday) {
-                var otherSettingsBuzzWeekendData = settingsService.getOtherSettingsBuzzWeekend();
-                $.when(otherSettingsBuzzWeekendData).done(function (otherSettingsBuzzWeekend) {
-
-                  var name = "";
-                  if ($localStorage["name"]) {
-                    name = $localStorage["name"];
-                  }
-                  var buzzSettings;
-                  var isWeekdayNotification = isWeekday(new Date(Date.now()));
-
-                  if (isWeekdayNotification) {
-                    buzzSettings = otherSettingsBuzzWeekday;
-                  }
-                  else {
-                    buzzSettings = otherSettingsBuzzWeekend;
-                  }
-
-                  console.info(FILENAME + OBJECTNAME + METHODNAME + "ending get all features");
-
-                  var delayTime;
-                  if (buzzSettings) {
-                    delayTime = 2000;
-                  }
-                  else {
-                    delayTime = 1;
-                  }
-                  setTimeout(function () {
-                    if (isWeekdayNotification) {
-                      var promise = runWeekdayNotifications(settingsWeekdayFeatures, otherSettingsHoroscopeList);
-                      promise.then(function (data) {
-                        var nextNotificationTime = new Date(Date.now());
-                        nextNotificationTime.setMinutes(nextNotificationTime.getMinutes() + 1);
-
-                        cordova.plugins.notification.local.cancelAll(function () {
-                        }, this);
-                        $cordovaLocalNotification.add({
-                          id: ACTIVENOTIFICATIONID,
-                          message: $translate.instant("hello") + name,
-                          title: $translate.instant("daybreak.notification.text"),
-                          firstAt: nextNotificationTime,
-                          every: "minute",
-                          sound: buzzSettings ? 'file://audio/loudBuzzer.mp3' : ''
-                        }).then(function () {
-                          console.info(FILENAME + OBJECTNAME + METHODNAME + "cordovaLocalNotifications set");
-                        });
-                      });
-                    }
-                    else {
-                      var promise = runWeekendNotifications(settingsWeekendFeatures, otherSettingsHoroscopeList);
-                      promise.then(function (data) {
-                        var nextNotificationTime = new Date(Date.now());
-                        nextNotificationTime.setMinutes(nextNotificationTime.getMinutes() + 1);
-
-                        cordova.plugins.notification.local.cancelAll(function () {
-                        }, this);
-                        $cordovaLocalNotification.add({
-                          id: ACTIVENOTIFICATIONID,
-                          message: $translate.instant("hello") + name,
-                          title: $translate.instant("daybreak.notification.text"),
-                          firstAt: nextNotificationTime,
-                          every: "minute",
-                          sound: buzzSettings ? 'file://audio/loudBuzzer.mp3' : ''
-                        }).then(function () {
-                          console.info(FILENAME + OBJECTNAME + METHODNAME + "cordovaLocalNotifications set");
-                        });
-                      });
-                    }
-                  }, delayTime);
-                });
-              });
-            });
-          });
-        });
+      $rootScope.$on("$cordovaLocalNotification:click", function (id, state, json) {
+        notificationTriggeredActions();
       });
       console.info(FILENAME + OBJECTNAME + METHODNAME + "setting code for cordovaLocalNotification:trigger");
-      $scope.$on("$cordovaLocalNotification:trigger", function (id, state, json) {
-        var settingsWeekdayFeaturesList, settingsWeekendFeaturesList, horoscopeList;
-        console.info(FILENAME + OBJECTNAME + METHODNAME + "starting get all features");
-        var settingsWeekdayFeaturesData = settingsService.getWeekdayFeatureSettings(settingsWeekdayFeaturesList);
-        $.when(settingsWeekdayFeaturesData).done(function (settingsWeekdayFeatures) {
-          var settingsWeekendFeaturesData = settingsService.getWeekendFeatureSettings(settingsWeekendFeaturesList);
-          $.when(settingsWeekendFeaturesData).done(function (settingsWeekendFeatures) {
-            var otherSettingsHoroscopeListData = settingsService.getOtherSettingsHoroscopeList(horoscopeList);
-            $.when(otherSettingsHoroscopeListData).done(function (otherSettingsHoroscopeList) {
-              var otherSettingsBuzzWeekdayData = settingsService.getOtherSettingsBuzzWeekday();
-              $.when(otherSettingsBuzzWeekdayData).done(function (otherSettingsBuzzWeekday) {
-                var otherSettingsBuzzWeekendData = settingsService.getOtherSettingsBuzzWeekend();
-                $.when(otherSettingsBuzzWeekendData).done(function (otherSettingsBuzzWeekend) {
-
-                  var name = "";
-                  if ($localStorage["name"]) {
-                    name = $localStorage["name"];
-                  }
-                  var buzzSettings;
-                  var isWeekdayNotification = isWeekday(new Date(Date.now()));
-
-                  if (isWeekdayNotification) {
-                    buzzSettings = otherSettingsBuzzWeekday;
-                  }
-                  else {
-                    buzzSettings = otherSettingsBuzzWeekend;
-                  }
-                  console.info(FILENAME + OBJECTNAME + METHODNAME + "ending get all features");
-
-                  var delayTime;
-                  if (buzzSettings) {
-                    delayTime = 2000;
-                  }
-                  else {
-                    delayTime = 1;
-                  }
-                  setTimeout(function () {
-                    if (isWeekdayNotification) {
-                      var promise = runWeekdayNotifications(settingsWeekdayFeatures, otherSettingsHoroscopeList);
-                      promise.then(function (data) {
-                        var nextNotificationTime = new Date(Date.now());
-                        nextNotificationTime.setMinutes(nextNotificationTime.getMinutes() + 1);
-
-                        cordova.plugins.notification.local.cancelAll(function () {
-                        }, this);
-                        $cordovaLocalNotification.add({
-                          id: ACTIVENOTIFICATIONID,
-                          message: $translate.instant("hello") + name,
-                          title: $translate.instant("daybreak.notification.text"),
-                          firstAt: nextNotificationTime,
-                          every: "minute",
-                          sound: buzzSettings ? 'file://audio/loudBuzzer.mp3' : ''
-                        }).then(function () {
-                          console.info(FILENAME + OBJECTNAME + METHODNAME + "cordovaLocalNotifications set");
-                        });
-                      });
-                    }
-                    else {
-                      var promise = runWeekendNotifications(settingsWeekendFeatures, otherSettingsHoroscopeList);
-                      promise.then(function (data) {
-                        var nextNotificationTime = new Date(Date.now());
-                        nextNotificationTime.setMinutes(nextNotificationTime.getMinutes() + 1);
-
-                        cordova.plugins.notification.local.cancelAll(function () {
-                        }, this);
-                        $cordovaLocalNotification.add({
-                          id: ACTIVENOTIFICATIONID,
-                          message: $translate.instant("hello")+ name,
-                          title: $translate.instant("daybreak.notificaton.text"),
-                          firstAt: nextNotificationTime,
-                          every: "minute",
-                          sound: buzzSettings ? 'file://audio/loudBuzzer.mp3' : ''
-                        }).then(function () {
-                          console.info(FILENAME + OBJECTNAME + METHODNAME + "cordovaLocalNotifications set");
-                        });
-                      });
-                    }
-                  }, delayTime);
-                });
-              });
-            });
-          });
-        });
+      $rootScope.$on("$cordovaLocalNotification:trigger", function (id, state, json) {
+        notificationTriggeredActions();
       });
+
       navigator.plugins.alarm.cancel(
         function (response) {
           console.debug(FILENAME + OBJECTNAME + METHODNAME + "navigator.plugins.alarm.cancel" + JSON.stringify(response));
@@ -305,7 +230,50 @@ gcalarm.controller('notificationController', ['$scope', '$q', '$rootScope', '$io
           console.error(FILENAME + OBJECTNAME + METHODNAME + JSON.stringify(errorResponse));
         }
       );
+      textToSpeech.playBlankText();
       return defer.promise();
+    };
+
+    function notificationTriggeredActions() {
+      var METHODNAME = "notificationTriggeredActions:";
+
+      var name = "";
+      if ($localStorage["name"]) {
+        name = $localStorage["name"];
+      }
+
+      var buzzSettings;
+
+      var today = new Date(Date.now());
+      var isWeekdayNotification = isWeekday(today);
+      var otherSettingsBuzzWeekdayData = settingsService.getOtherSettingsBuzzWeekday();
+      $.when(otherSettingsBuzzWeekdayData).done(function (otherSettingsBuzzWeekday) {
+        var otherSettingsBuzzWeekendData = settingsService.getOtherSettingsBuzzWeekend();
+        $.when(otherSettingsBuzzWeekendData).done(function (otherSettingsBuzzWeekend) {
+          if (isWeekdayNotification) {
+            buzzSettings = otherSettingsBuzzWeekday;
+          }
+          else {
+            buzzSettings = otherSettingsBuzzWeekend;
+          }
+          console.info(FILENAME + OBJECTNAME + METHODNAME + "ending get all features");
+
+          var delayTime;
+          if (buzzSettings) {
+            delayTime = 2000;
+          }
+          else {
+            delayTime = 0;
+          }
+
+          setTimeout(function () {
+            $rootScope.$broadcast("notificationPlayManager", {
+              "notificationState": Constants.notificationState.TRIGGERED
+            });
+          }, delayTime);
+
+        });
+      });
     };
 
     function getHoroscopeObject(horoscopeList) {
@@ -464,7 +432,6 @@ gcalarm.controller('notificationController', ['$scope', '$q', '$rootScope', '$io
             notificationData += data;
             promise = getHoroscopeObject(otherSettingsHoroscopeList);
             promise.then(function (horoscopeObject) {
-              alert(horoscopeObject);
               promise = notificationService.sayHoroscope(horoscopeObject, isHoroscopeFeatureOn);
               promise.then(function (data) {
                 notificationData += data;
@@ -502,20 +469,20 @@ gcalarm.controller('notificationController', ['$scope', '$q', '$rootScope', '$io
     }
   });
 
-  function isWeekday(days) {
+  function isWeekday(day) {
     var METHODNAME = "isWeekday:";
     console.info(FILENAME + OBJECTNAME + METHODNAME);
 
-    var weekdayList = [$locale.DATETIME_FORMATS.SHORTDAY[1].toString().toLowerCase(), $locale.DATETIME_FORMATS.SHORTDAY[2].toString().toLowerCase(), $locale.DATETIME_FORMATS.SHORTDAY[3].toString().toLowerCase(), $locale.DATETIME_FORMATS.SHORTDAY[4].toString().toLowerCase(), $locale.DATETIME_FORMATS.SHORTDAY[5].toString().toLowerCase()];
+    var weekdayList = [1, 2, 3, 4, 5];
 
-    return ($.inArray(days.text, weekdayList)) > -1;
+    return ($.inArray(day.getDay(), weekdayList)) > -1;
   }
 
-  function isWeekend(days) {
+  function isWeekend(day) {
     var METHODNAME = "isWeekend:";
     console.info(FILENAME + OBJECTNAME + METHODNAME);
 
-    var weekendList = [$locale.DATETIME_FORMATS.SHORTDAY[6].toString().toLowerCase(), $locale.DATETIME_FORMATS.SHORTDAY[0].toString().toLowerCase()];
-    return ($.inArray(days.text, weekendList)) > -1;
+    var weekendList = [0, 6];
+    return ($.inArray(day.getDay(), weekendList)) > -1;
   }
 }]);

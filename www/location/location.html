@@ -1,10 +1,10 @@
 <ion-view>
   <ion-content>
     <div class="list homeLocation">
-      <ion-google-place placeholder="{{ 'location.home' | translate }}" ng-model="home" location-changed="homeChanged"/>
+      <ion-google-place placeholder="{{ 'location.home' | translate }}" ng-model="location.home" location-changed="homeChanged"/>
     </div>
     <div class="list workLocation">
-      <ion-google-place placeholder="{{ 'location.work' | translate }}" ng-model="work" location-changed="workChanged"/>
+      <ion-google-place placeholder="{{ 'location.work' | translate }}" ng-model="location.work" location-changed="workChanged"/>
     </div>
     <button class="saveLocation button button-block button-positive" ng-click="saveLocations()" translate="button.save.text"></button>
   </ion-content>

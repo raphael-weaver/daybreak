@@ -2,7 +2,7 @@ var FILENAME = "locationController.js:";
 gcalarm.controller('locationController', ['$scope','locationService', 'statusService', '$ionicModal', '$timeout', '$ionicPopup', '$translate', function($scope, locationService, statusService, $ionicModal, $timeout, $ionicPopup, $translate) {
   var OBJECTNAME = "locationController:";
 
-  statusService.setExistingBackgroundImage();
+  //statusService.setExistingBackgroundImage();
 
   $scope.location = {"home":"","work":""};
 
@@ -25,7 +25,7 @@ gcalarm.controller('locationController', ['$scope','locationService', 'statusSer
       console.info(FILENAME + OBJECTNAME);
       console.debug(FILENAME + OBJECTNAME + JSON.stringify(data));
 
-      $scope.home = data;
+      $scope.location.home = data;
     }
   });
 
@@ -35,7 +35,7 @@ gcalarm.controller('locationController', ['$scope','locationService', 'statusSer
       console.info(FILENAME + OBJECTNAME);
       console.debug(FILENAME + OBJECTNAME + JSON.stringify(data));
 
-      $scope.work = data;
+      $scope.location.work = data;
     }
   });
 

@@ -9,11 +9,11 @@ gcalarm.service('textToSpeech', ['$translate', function ($translate) {
 
     TTS.speak({
       text: " ",
-      rate: 0.90,
+      rate: 1,
       locale: $translate.instant("locale.textToSpeech")
     }, function () {
       console.info(FILENAME + OBJECTNAME + METHODNAME + "TTS talk is successfully");
-      //alert('success');
+
     }, function (error) {
       console.error(FILENAME + OBJECTNAME + METHODNAME + JSON.stringify(error));
     });
@@ -26,7 +26,7 @@ gcalarm.service('textToSpeech', ['$translate', function ($translate) {
 
     TTS.speak({
       text: text,
-      rate: 0.90,
+      rate: 1,
       locale: $translate.instant("locale.textToSpeech")
     }, function () {
       console.info(FILENAME + OBJECTNAME + METHODNAME + "TTS talk is successfully");
@@ -42,7 +42,7 @@ gcalarm.service('textToSpeech', ['$translate', function ($translate) {
 
     TTS.speak({
       text: text,
-      rate: 0.90,
+      rate: 1,
       locale: $translate.instant("locale.textToSpeech")
     }, function () {
       console.info(FILENAME + OBJECTNAME + METHODNAME + "TTS talk is successfully");

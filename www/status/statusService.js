@@ -149,9 +149,10 @@ gcalarm.service('statusService', ['$cordovaCamera', '$localStorage', '$translate
     var METHODNAME = "setCSSBackgroundImage:";
     console.info(FILENAME + OBJECTNAME + METHODNAME);
 
-    $('.pane').css('background-image', 'url(' + imageUri + ')');
+    $('.pane').css('background', 'url(' + imageUri + ')');
     $('.pane').css('background-repeat', 'no-repeat');
     $('.pane').css('background-attachment', 'fixed');
     $('.pane').css('background-position', 'center');
+    $('.pane').css('background-size', 'contain');
   }
 }]);

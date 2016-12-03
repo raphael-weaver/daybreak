@@ -4,6 +4,35 @@ gcalarm.service('settingsService', ['$ionicPlatform', '$locale', '$translate', f
 
   var gcalarmdb = window.openDatabase('gcalarm', '1.0', 'GCAlarm DB', 2 * 1024 * 1024);
 
+  this.getSnoozeDelayTime = function () {
+
+    var METHODNAME = "getSnoozeDelayTime:";
+    console.info(FILENAME + OBJECTNAME + METHODNAME);
+
+    var defer = $.Deferred();
+
+    gcalarmdb.transaction(function (tx) {
+      tx.executeSql('CREATE TABLE IF NOT EXISTS NOTIFICATIONTIME (notificationType TEXT, notificationName TEXT, notificationTime INTEGER)');
+      tx.executeSql("SELECT * FROM NOTIFICATIONTIME WHERE notificationType = ?", ["SNOOZE"], function (tx, resultSet) {
+
+        console.debug(FILENAME + OBJECTNAME + METHODNAME + "notification time from db" + resultSet.rows.length);
+
+        var snoozeDelayTimeVal;
+        if (resultSet.rows.length > 0) {
+          snoozeDelayTimeVal = resultSet.rows.item(0).notificationTime;
+          defer.resolve(snoozeDelayTimeVal);
+        }
+        else {
+          snoozeDelayTimeVal = 15;
+          defer.resolve(snoozeDelayTimeVal);
+        }
+      }, function (tx, error) {
+        console.error(FILENAME + OBJECTNAME + METHODNAME + 'SELECT error: ' + error.message);
+      });
+    });
+    return defer.promise();
+  };
+
   this.getDaySettings = function (settingsWeekdayList, settingsWeekendList) {
     var METHODNAME = "getDaySettings:";
     console.info(FILENAME + OBJECTNAME + METHODNAME);
@@ -76,8 +105,8 @@ gcalarm.service('settingsService', ['$ionicPlatform', '$locale', '$translate', f
         }
         else {
           settingsWeekdayFeaturesList = [
-            {text: $translate.instant("feature.googleTasks"), checked: false},
             {text: $translate.instant("feature.weather"), checked: false},
+            {text: $translate.instant("feature.googleTasks"), checked: false},
             {text: $translate.instant("feature.commuteTime"), checked: false},
             {text: $translate.instant("feature.horoscope"), checked: false},
             {text: $translate.instant("feature.inspirationalQuote"), checked: false},
@@ -112,8 +141,8 @@ gcalarm.service('settingsService', ['$ionicPlatform', '$locale', '$translate', f
         }
         else {
           settingsWeekendFeaturesList = [
-            {text: $translate.instant("feature.googleTasks"), checked: false},
             {text: $translate.instant("feature.weather"), checked: false},
+            {text: $translate.instant("feature.googleTasks"), checked: false},
             {text: $translate.instant("feature.commuteTime"), checked: false},
             {text: $translate.instant("feature.horoscope"), checked: false},
             {text: $translate.instant("feature.inspirationalQuote"), checked: false},
@@ -311,6 +340,25 @@ gcalarm.service('settingsService', ['$ionicPlatform', '$locale', '$translate', f
     defer.resolve(true);
     return defer.promise();
   };
+
+  this.saveSnoozeDelayTime = function (snoozeTime) {
+    var METHODNAME = "saveSnoozeDelayTime:";
+    console.info(FILENAME + OBJECTNAME + METHODNAME);
+
+    var defer = $.Deferred();
+
+    console.info(FILENAME + OBJECTNAME + METHODNAME + "inserting other settings");
+
+    gcalarmdb.transaction(function (tx) {
+      tx.executeSql('CREATE TABLE IF NOT EXISTS NOTIFICATIONTIME (notificationType TEXT, notificationName TEXT, notificationTime INTEGER)');
+      tx.executeSql('DELETE FROM NOTIFICATIONTIME WHERE notificationType = ?', ['SNOOZE']);
+      tx.executeSql('INSERT INTO NOTIFICATIONTIME (notificationType, notificationName, notificationTime) VALUES (?,?,?)', ["SNOOZE", "DEFAULT", snoozeTime]);
+    });
+
+    defer.resolve(true);
+    return defer.promise();
+  };
+
 
   function isWeekday(days) {
     var METHODNAME = "isWeekday:";

@@ -1,64 +1,162 @@
 <ion-view>
   <ion-content>
-    <div ng-controller="notificationController">
-    </div>
-    <ion-tabs class="settingTabs tabs-positive" >
-      <ion-tab title="{{'weekday' | translate}}">
-        <div class="settingDayToggles">
-          <ion-toggle toggle-balanced ng-repeat="day in settingsWeekdayList"
-                      ng-model="day.checked"
-                      ng-checked="day.checked">
-            {{ day.text }}
-          </ion-toggle>
-        </div>
-        <div class="settingFeatureToggles">
-          <ion-toggle toggle-balanced ng-repeat="feature in settingsWeekdayFeaturesList"
-                      ng-model="feature.checked"
-                      ng-checked="feature.checked"
-                      ng-click="checkFeatureRequirement(feature)">
-            {{ feature.text }}
-          </ion-toggle>
-        </div>
-        <div class="buzzToggle">
-          <ion-toggle toggle-balanced ng-model="buzzSetting.weekday.checked" ng-checked="buzzSetting.weekday.checked">
-            {{buzzSetting.weekday.text}}
-          </ion-toggle>
-        </div>
-        <div class="horoscopeSignSelect">
-          <p>
-            <button class="button button-block button-light" ng-click="openPopover($event)" translate="horoscopeSign"></button>
-          </p>
-        </div>
-        <button class="saveLocation button button-block button-positive" ng-click="saveSettings()" translate="button.save.text"></button>
-      </ion-tab>
-      <ion-tab title="{{'weekend' | translate}}">
-        <div class="settingDayToggles">
-          <ion-toggle toggle-balanced ng-repeat="day in settingsWeekendList"
-                      ng-model="day.checked"
-                      ng-checked="day.checked">
-            {{ day.text }}
-          </ion-toggle>
-        </div>
-        <div class="settingFeatureToggles">
-          <ion-toggle toggle-balanced ng-repeat="feature in settingsWeekendFeaturesList"
-                      ng-model="feature.checked"
-                      ng-checked="feature.checked"
-                      ng-click="checkFeatureRequirement(feature)">
-            {{ feature.text }}
-          </ion-toggle>
-        </div>
-        <div class="buzzToggle">
-          <ion-toggle toggle-balanced ng-model="buzzSetting.weekend.checked" ng-checked="buzzSetting.weekend.checked">
-            {{buzzSetting.weekend.text}}
-          </ion-toggle>
-        </div>
-        <div class="horoscopeSignSelect">
-          <p>
-            <button class="button button-block button-light" ng-click="openPopover($event)" translate="horoscopeSign"></button>
-          </p>
-        </div>
-        <button class="saveLocation button button-block button-positive" ng-click="saveSettings()" translate="button.save.text"></button>
-      </ion-tab>
-    </ion-tabs>
+    <div ng-controller="notificationController"/>
+    <div ng-controller="purchaseController"/>
+    <ion-view>
+      <ion-tabs class="settingTabs tabs-positive">
+        <ion-tab title="{{'weekday' | translate}}">
+          <div class="settingDayToggles">
+            <ion-toggle toggle-balanced ng-repeat="day in settingsWeekdayList"
+                        ng-model="day.checked"
+                        ng-checked="day.checked">
+              {{ day.text }}
+            </ion-toggle>
+          </div>
+          <div class="settingFeatureToggles" ng-show="renderSettingFeatureToggles">
+            <div class="settingFeatureTogglesWeather">
+              <ion-toggle toggle-balanced
+                          ng-repeat="feature in settingsWeekdayFeaturesList | filter: weatherFeaturesFilter"
+                          ng-model="feature.checked"
+                          ng-checked="feature.checked"
+                          ng-click="checkFeatureRequirement(feature)">
+                {{ feature.text }}
+              </ion-toggle>
+            </div>
+            <div class="settingFeatureTogglesGoogleOn" ng-show="isGoogleFeaturesPurchased">
+              <ion-toggle toggle-balanced
+                          ng-repeat="feature in settingsWeekdayFeaturesList | filter: googleFeaturesFilter"
+                          ng-model="feature.checked"
+                          ng-checked="feature.checked"
+                          ng-click="checkFeatureRequirement(feature)">
+                {{ feature.text }}
+              </ion-toggle>
+            </div>
+            <div class="settingFeatureTogglesGoogleOff" ng-show="!isGoogleFeaturesPurchased">
+              <ion-toggle toggle-balanced
+                          ng-repeat="feature in settingsWeekdayFeaturesList | filter: googleFeaturesFilter"
+                          ng-model="feature.checked"
+                          ng-checked="feature.checked"
+                          ng-click="checkFeatureRequirement(feature)">
+                <div class="googleOffColor">{{ feature.text }}</div>
+              </ion-toggle>
+              <button class="googleFeatures button button-outline button-stable" ng-click="purchaseGoogleFeatures()">
+                <div class="googleOffColor">{{ 'feature.purchase' | translate}}</div>
+              </button>
+            </div>
+            <div class="settingFeatureTogglesHoroBiblInspOn" ng-show="isHoroBiblInspFeaturesPurchased">
+              <ion-toggle toggle-balanced
+                          ng-repeat="feature in settingsWeekdayFeaturesList | filter: horoBiblInspFeaturesFilter"
+                          ng-model="feature.checked"
+                          ng-checked="feature.checked"
+                          ng-click="checkFeatureRequirement(feature)">
+                {{ feature.text }}
+              </ion-toggle>
+            </div>
+            <div class="settingFeatureTogglesHoroBiblInspOff" ng-show="!isHoroBiblInspFeaturesPurchased">
+              <ion-toggle toggle-balanced
+                          ng-repeat="feature in settingsWeekdayFeaturesList | filter: horoBiblInspFeaturesFilter"
+                          ng-model="feature.checked"
+                          ng-checked="feature.checked"
+                          ng-click="checkFeatureRequirement(feature)">
+                <div class="horoBiblInspOffColor">{{ feature.text }}</div>
+              </ion-toggle>
+              <button class="horoBiblInspFeatures button button-outline button-stable"
+                      ng-click="purchaseExtraInfoFeatures()">
+                <div class="horoBiblInspOffColor">{{ 'feature.purchase' | translate}}</div>
+              </button>
+            </div>
+          </div>
+          <div class="buzzToggle">
+            <ion-toggle toggle-balanced ng-model="buzzSetting.weekday.checked" ng-checked="buzzSetting.weekday.checked">
+              {{buzzSetting.weekday.text}}
+            </ion-toggle>
+          </div>
+          <div class="horoscopeSignSelect">
+            <p>
+              <button class="button button-block button-light" ng-click="openPopover($event)"
+                      translate="horoscopeSign"></button>
+            </p>
+          </div>
+          <button class="saveLocation button button-block button-positive" ng-click="saveSettings()"
+                  translate="button.save.text"></button>
+        </ion-tab>
+        <ion-tab title="{{'weekend' | translate}}">
+          <div class="settingDayToggles">
+            <ion-toggle toggle-balanced ng-repeat="day in settingsWeekendList"
+                        ng-model="day.checked"
+                        ng-checked="day.checked">
+              {{ day.text }}
+            </ion-toggle>
+          </div>
+          <div class="settingFeatureToggles" ng-show="renderSettingFeatureToggles">
+            <div class="settingFeatureTogglesWeather">
+              <ion-toggle toggle-balanced
+                          ng-repeat="feature in settingsWeekendFeaturesList | filter: weatherFeaturesFilter"
+                          ng-model="feature.checked"
+                          ng-checked="feature.checked"
+                          ng-click="checkFeatureRequirement(feature)">
+                {{ feature.text }}
+              </ion-toggle>
+            </div>
+            <div class="settingFeatureTogglesGoogleOn" ng-show="isGoogleFeaturesPurchased">
+              <ion-toggle toggle-balanced
+                          ng-repeat="feature in settingsWeekendFeaturesList | filter: googleFeaturesFilter"
+                          ng-model="feature.checked"
+                          ng-checked="feature.checked"
+                          ng-click="checkFeatureRequirement(feature)">
+                {{ feature.text }}
+              </ion-toggle>
+            </div>
+            <div class="settingFeatureTogglesGoogleOff" ng-show="!isGoogleFeaturesPurchased">
+              <ion-toggle toggle-balanced
+                          ng-repeat="feature in settingsWeekendFeaturesList | filter: googleFeaturesFilter"
+                          ng-model="feature.checked"
+                          ng-checked="feature.checked"
+                          ng-click="checkFeatureRequirement(feature)">
+                <div class="googleOffColor">{{ feature.text }}</div>
+              </ion-toggle>
+              <button class="googleFeatures button button-outline button-stable" ng-click="purchaseGoogleFeatures()">
+                <div class="googleOffColor">{{ 'feature.purchase' | translate}}</div>
+              </button>
+            </div>
+            <div class="settingFeatureTogglesHoroBiblInspOn" ng-show="isHoroBiblInspFeaturesPurchased">
+              <ion-toggle toggle-balanced
+                          ng-repeat="feature in settingsWeekendFeaturesList | filter: horoBiblInspFeaturesFilter"
+                          ng-model="feature.checked"
+                          ng-checked="feature.checked"
+                          ng-click="checkFeatureRequirement(feature)">
+                {{ feature.text }}
+              </ion-toggle>
+            </div>
+            <div class="settingFeatureTogglesHoroBiblInspOff" ng-show="!isHoroBiblInspFeaturesPurchased">
+              <ion-toggle toggle-balanced
+                          ng-repeat="feature in settingsWeekendFeaturesList | filter: horoBiblInspFeaturesFilter"
+                          ng-model="feature.checked"
+                          ng-checked="feature.checked"
+                          ng-click="checkFeatureRequirement(feature)">
+                <div class="horoBiblInspOffColor">{{ feature.text }}</div>
+              </ion-toggle>
+              <button class="horoBiblInspFeatures button button-outline button-stable"
+                      ng-click="purchaseExtraInfoFeatures()">
+                <div class="horoBiblInspOffColor">{{ 'feature.purchase' | translate}}</div>
+              </button>
+            </div>
+          </div>
+          <div class="buzzToggle">
+            <ion-toggle toggle-balanced ng-model="buzzSetting.weekend.checked" ng-checked="buzzSetting.weekend.checked">
+              {{buzzSetting.weekend.text}}
+            </ion-toggle>
+          </div>
+          <div class="horoscopeSignSelect">
+            <p>
+              <button class="button button-block button-light" ng-click="openPopover($event)"
+                      translate="horoscopeSign"></button>
+            </p>
+          </div>
+          <button class="saveSettings button button-block button-positive" ng-click="saveSettings()"
+                  translate="button.save.text"></button>
+        </ion-tab>
+      </ion-tabs>
+    </ion-view>
   </ion-content>
 </ion-view>

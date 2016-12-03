@@ -1,8 +1,7 @@
 var FILENAME = "statusController.js:";
-gcalarm.controller('statusController', ['$scope', '$rootScope', 'statusService', '$ionicModal', '$timeout', '$ionicPopup', '$ionicPlatform', '$cordovaLocalNotification', '$translate', function($scope, $rootScope, statusService, $ionicModal, $timeout, $ionicPopup, $ionicPlatform, $cordovaLocalNotification, $translate) {
+gcalarm.controller('statusController', ['$scope', '$rootScope', 'statusService', '$ionicModal', '$timeout', '$ionicPopup', '$ionicPlatform', '$cordovaLocalNotification', '$translate', 'Constants', function($scope, $rootScope, statusService, $ionicModal, $timeout, $ionicPopup, $ionicPlatform, $cordovaLocalNotification, $translate, Constants) {
   var OBJECTNAME = "statusController:";
 
-  statusService.setExistingBackgroundImage();
   var notificationSet = "";
   $ionicPlatform.ready(function() {
     console.info(FILENAME + OBJECTNAME + "ionic platform is ready");
@@ -19,7 +18,7 @@ gcalarm.controller('statusController', ['$scope', '$rootScope', 'statusService',
         titleLabel: '12-hour Format',  //Optional
         setLabel: $translate.instant("button.set.text"),  //Optional
         closeLabel: $translate.instant("button.close.text"),  //Optional
-        setButtonType: 'button-positive',  //Optional
+        //setButtonType: 'button-positive',  //Optional
         closeButtonType: 'button-stable',  //Optional
         callback: function (val) {    //Mandatory
           weekdayTimePickerCallback(val);
@@ -38,7 +37,7 @@ gcalarm.controller('statusController', ['$scope', '$rootScope', 'statusService',
         titleLabel: '12-hour Format',  //Optional
         setLabel: $translate.instant("button.set.text"),  //Optional
         closeLabel: $translate.instant("button.close.text"),  //Optional
-        setButtonType: 'button-positive',  //Optional
+        //setButtonType: 'button-positive',  //Optional
         closeButtonType: 'button-stable',  //Optional
         callback: function (val) {    //Mandatory
           weekendTimePickerCallback(val);
@@ -57,12 +56,17 @@ gcalarm.controller('statusController', ['$scope', '$rootScope', 'statusService',
         $.when(dataFiller).done(function(data) {
           console.info(FILENAME + OBJECTNAME + METHODNAME + "broadcast setNotifications");
 
+          $rootScope.$broadcast("notificationPlayManager", {
+            "notificationState":Constants.notificationState.STOP
+          });
           $rootScope.$broadcast("setNotifications");
         });
       }
     }
 
     function weekendTimePickerCallback(val) {
+      var selectedTime = new Date(val * 1000);
+
       var METHODNAME = "weekendTimePickerCallback:";
       console.info(FILENAME + OBJECTNAME + METHODNAME);
 
@@ -73,6 +77,9 @@ gcalarm.controller('statusController', ['$scope', '$rootScope', 'statusService',
         $.when(dataFiller).done(function(data) {
           console.info(FILENAME + OBJECTNAME + METHODNAME + "broadcast setNotifications");
 
+          $rootScope.$broadcast("notificationPlayManager", {
+            "notificationState":Constants.notificationState.STOP
+          });
           $rootScope.$broadcast("setNotifications");
         });
       }

@@ -3,9 +3,6 @@
   left: 40%;
   top: 5%;
 }
-.medium_button {
-  font-size:small !important;
-}
 ion-page.show-page scroll-content {
   background-color: black;
 }
