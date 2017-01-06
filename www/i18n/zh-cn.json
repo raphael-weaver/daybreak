@@ -5,7 +5,7 @@
   "location": "位置",
   "account": "帐户",
   "settings": "设置",
-  "daybreak.notificaton.text": "你的 Daybreak....",
+  "daybreak.notification.text": "你的 Daybreak....",
   "daybreak.time": "Daybreak 时间",
   "snooze.delay.time": "暂停时间延迟",
   "minutes": "分钟",

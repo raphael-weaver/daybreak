@@ -68,6 +68,7 @@ gcalarm.service('statusService', ['$cordovaCamera', '$localStorage', '$translate
     console.info(FILENAME + OBJECTNAME + METHODNAME);
 
     var defer = $.Deferred();
+    var selectedTime = new Date(notificationTime* 1000);
 
     console.info(FILENAME + OBJECTNAME + METHODNAME + "inserting notification weekday");
     gcalarmdb.transaction(function (tx) {

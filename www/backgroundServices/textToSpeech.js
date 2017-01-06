@@ -26,7 +26,7 @@ gcalarm.service('textToSpeech', ['$translate', function ($translate) {
 
     TTS.speak({
       text: text,
-      rate: 1,
+      rate: .93,
       locale: $translate.instant("locale.textToSpeech")
     }, function () {
       console.info(FILENAME + OBJECTNAME + METHODNAME + "TTS talk is successfully");

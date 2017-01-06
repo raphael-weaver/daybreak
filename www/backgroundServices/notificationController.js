@@ -27,10 +27,15 @@ gcalarm.controller('notificationController', ['$scope', '$q', '$rootScope', '$io
 
             if (notificationData.notificationState === Constants.notificationState.STOP) {//create enuumeration for different state and functionality
               $localStorage["isStopped"] = true;
-              cordova.plugins.notification.local.clearAll(function () {
-              }, this);
+              $localStorage["presentState"] = Constants.notificationState.STOP;
+
+              console.info(FILENAME + OBJECTNAME  + METHODNAME + "calling $cordovaLocalNotification.cancelAll method");
+              $cordovaLocalNotification.cancelAll().then(function () {
+              });
             }
             else if (notificationData.notificationState === Constants.notificationState.SNOOZE) {
+              $localStorage["isStopped"] = true;
+              $localStorage["presentState"] = Constants.notificationState.SNOOZE;
 
               var snoozeDelay = settingsService.getSnoozeDelayTime();
               $.when(snoozeDelay).done(function (snoozeDelayMinutes) {
@@ -39,14 +44,17 @@ gcalarm.controller('notificationController', ['$scope', '$q', '$rootScope', '$io
                 var snoozeDelayMillSecs = (60000 * snoozeDelayMinutes);
 
                 setTimeout(function () {
+                  if($localStorage["presentState"] == Constants.notificationState.SNOOZE) {
                     $rootScope.$broadcast("notificationPlayManager", {
-                      "notificationState":Constants.notificationState.TRIGGERED
+                      "notificationState": Constants.notificationState.TRIGGERED
                     });
+                  }
                 }, snoozeDelayMillSecs);
               });
             }
             else if (notificationData.notificationState === Constants.notificationState.TRIGGERED) {
               $localStorage["isStopped"] = false;
+              $localStorage["presentState"] = Constants.notificationState.TRIGGERED;
 
               var today = new Date(Date.now());
               var isWeekdayNotification = isWeekday(today);
@@ -69,6 +77,7 @@ gcalarm.controller('notificationController', ['$scope', '$q', '$rootScope', '$io
             }
             else if (notificationData.notificationState === Constants.notificationState.ACTIVE) {
               var oneMinuteInMillSecs = 60000;
+              $localStorage["presentState"] = Constants.notificationState.ACTIVE;
 
               setTimeout(function () {
                 var today = new Date(Date.now());
@@ -138,10 +147,11 @@ gcalarm.controller('notificationController', ['$scope', '$q', '$rootScope', '$io
               var otherSettingsBuzzWeekendData = settingsService.getOtherSettingsBuzzWeekend();
               $.when(otherSettingsBuzzWeekendData).done(function (otherSettingsBuzzWeekend) {
                 console.info(FILENAME + OBJECTNAME + METHODNAME + "ending to retrieve all data for notification");
+                var HOUROFFSET = 5;
                 var dateTime = new Date(Date.now());
-                var selectedTime = new Date(weekdayNotificationTime * 1000);
-                dateTime.setMinutes(selectedTime.getMinutes());
-                dateTime.setHours(selectedTime.getHours());
+                var weekdaySelectedTime = new Date(weekdayNotificationTime * 1000);
+                dateTime.setMinutes(weekdaySelectedTime.getMinutes());
+                dateTime.setHours(weekdaySelectedTime.getHours() + HOUROFFSET);
 
                 for (var counter = 0; counter < settingsDayList.settingsWeekdayList.length; counter++) {
                   var day = getFullDayName(settingsDayList.settingsWeekdayList[counter].text);
@@ -160,13 +170,16 @@ gcalarm.controller('notificationController', ['$scope', '$q', '$rootScope', '$io
                       message: $translate.instant("hello") + name,
                       title: $translate.instant("daybreak.notification.text"),
                       every: "week",
-                      sound: otherSettingsBuzzWeekday ? 'file://audio/loudBuzzer.mp3' : ''
+                      sound: otherSettingsBuzzWeekday ? 'file://audio/loudBuzzer.mp3' : '',
+                      icon: 'res://icon.png'
                     }).then(function () {
                       console.info(FILENAME + OBJECTNAME + METHODNAME + "cordovaLocalNotifications set");
                     });
                   }
                 }
-                dateTime = new Date(weekendNotificationTime * 1000);
+                var weekendSelectedTime = new Date(weekendNotificationTime * 1000);
+                dateTime.setMinutes(weekendSelectedTime.getMinutes());
+                dateTime.setHours(weekendSelectedTime.getHours() + HOUROFFSET);
                 for (var counter = 0; counter < settingsDayList.settingsWeekendList.length; counter++) {
                   var day = getFullDayName(settingsDayList.settingsWeekendList[counter].text);
 
@@ -178,13 +191,15 @@ gcalarm.controller('notificationController', ['$scope', '$q', '$rootScope', '$io
                   if (isDayOn) {
 
                     console.info(FILENAME + OBJECTNAME + METHODNAME + "calling $cordovaLocalNotification.add method");
+
                     $cordovaLocalNotification.add({
                       id: day.intValue,
                       firstAt: nextDay,
                       message: $translate.instant("hello") + name,
                       title: $translate.instant("daybreak.notification.text"),
                       every: "week",
-                      sound: otherSettingsBuzzWeekend ? 'file://audio/loudBuzzer.mp3' : ''
+                      sound: otherSettingsBuzzWeekend ? 'file://audio/loudBuzzer.mp3' : '',
+                      icon: 'res://icon.png'
                     }).then(function () {
                       console.info(FILENAME + OBJECTNAME + METHODNAME + "cordovaLocalNotifications set");
                     });
@@ -206,7 +221,6 @@ gcalarm.controller('notificationController', ['$scope', '$q', '$rootScope', '$io
       });
       console.info(FILENAME + OBJECTNAME + METHODNAME + "setting code for cordovaLocalNotification:click");
       $rootScope.$on("$cordovaLocalNotification:click", function (id, state, json) {
-        notificationTriggeredActions();
       });
       console.info(FILENAME + OBJECTNAME + METHODNAME + "setting code for cordovaLocalNotification:trigger");
       $rootScope.$on("$cordovaLocalNotification:trigger", function (id, state, json) {
@@ -260,7 +274,7 @@ gcalarm.controller('notificationController', ['$scope', '$q', '$rootScope', '$io
 
           var delayTime;
           if (buzzSettings) {
-            delayTime = 2000;
+            delayTime = 20000;
           }
           else {
             delayTime = 0;
@@ -352,8 +366,8 @@ gcalarm.controller('notificationController', ['$scope', '$q', '$rootScope', '$io
 
       console.info(FILENAME + OBJECTNAME + METHODNAME);
 
-      var isGoogleEventsFeatureOn = settingsWeekdayFeatures[0].checked;
-      var isWeatherFeatureOn = settingsWeekdayFeatures[1].checked;
+      var isWeatherFeatureOn = settingsWeekdayFeatures[0].checked;
+      var isGoogleEventsFeatureOn = settingsWeekdayFeatures[1].checked;
       var isCommuteTimeFeatureOn = settingsWeekdayFeatures[2].checked;
       var isHoroscopeFeatureOn = settingsWeekdayFeatures[3].checked;
       var isInspirationalQuoteOn = settingsWeekdayFeatures[4].checked;
@@ -413,8 +427,8 @@ gcalarm.controller('notificationController', ['$scope', '$q', '$rootScope', '$io
 
       console.info(FILENAME + OBJECTNAME + METHODNAME);
 
-      var isGoogleEventsFeatureOn = settingsWeekendFeatures[0].checked;
-      var isWeatherFeatureOn = settingsWeekendFeatures[1].checked;
+      var isWeatherFeatureOn = settingsWeekendFeatures[0].checked;
+      var isGoogleEventsFeatureOn = settingsWeekendFeatures[1].checked;
       var isCommuteTimeFeatureOn = settingsWeekendFeatures[2].checked;
       var isHoroscopeFeatureOn = settingsWeekendFeatures[3].checked;
       var isInspirationalQuoteOn = settingsWeekendFeatures[4].checked;

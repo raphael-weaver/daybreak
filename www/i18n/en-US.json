@@ -5,7 +5,7 @@
   "location": "Location",
   "account": "Account",
   "settings": "Settings",
-  "daybreak.notificaton.text": "Your Daybreak....",
+  "daybreak.notification.text": "Your Daybreak....",
   "daybreak.time": "Daybreak Time",
   "snooze.delay.time": "snooze time delay",
   "minutes": "Minutes",

@@ -5,7 +5,7 @@
   "location": "Место нахождения",
   "account": "Счет",
   "settings": "настройки",
-  "daybreak.notificaton.text": "Ваш Daybreak....",
+  "daybreak.notification.text": "Ваш Daybreak....",
   "daybreak.time": "Daybreak Время",
   "snooze.delay.time": "Время задержки повтора",
   "minutes": "минут",

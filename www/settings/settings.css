@@ -77,3 +77,16 @@ ion-popover-view.fitSelectHoroscopeSign ion-content {
 .no-padding {
   padding: 0px !important;
 }
+.pane:nth-child(2) {
+  background: url("../img/icon.png") no-repeat center center fixed;
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  background-size: contain;
+}
+
+.pane:nth-child(3) {
+  background: url("../img/icon.png") no-repeat center center fixed;
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  background-size: contain;
+}
